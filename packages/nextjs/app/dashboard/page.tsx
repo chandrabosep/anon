@@ -4,8 +4,11 @@ import React, { useState } from "react";
 import { CreateOrganizationForm } from "@/components/organization/CreateOrganizationForm";
 import { OrganizationCard } from "@/components/organization/OrganizationCard";
 import { VerificationRequestCard } from "@/components/organization/VerificationRequestCard";
+import { useAccount } from "wagmi";
+import Image from "next/image";
 
-function App() {
+function Dashboard() {
+  const { address, isConnected } = useAccount();
   const [organizations, setOrganizations] = useState<any[]>([
     {
       id: 1,
@@ -31,6 +34,15 @@ function App() {
       createdAt: new Date(),
     },
   ]);
+
+  if (!isConnected) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <Image src="/art.svg" alt="InsightAnon" width={500} height={500} className="w-48" />
+        <span className="text-gray-400 text-xl font-medium">Connect your wallet to view your organizations.</span>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen p-6">
@@ -64,4 +76,4 @@ function App() {
   );
 }
 
-export default App;
+export default Dashboard;

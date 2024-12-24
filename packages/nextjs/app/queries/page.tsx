@@ -1,12 +1,15 @@
 "use client";
 
+import Image from "next/image";
 import { ReputationChart } from "@/components/ReputationChart";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ArrowUp, MessageSquarePlus, PlusCircle, Star, ThumbsUp } from "lucide-react";
+import { ArrowUp, MessageSquarePlus, PlusCircle, ThumbsUp } from "lucide-react";
+import { useAccount } from "wagmi";
 
 export default function MonochromeFeedbackUI() {
+  const { isConnected, address } = useAccount();
   const organizationName = "TechNova Industries";
   const reputationScore = 2;
 
@@ -61,6 +64,15 @@ export default function MonochromeFeedbackUI() {
       likes: 8,
     },
   ];
+
+  if (!isConnected) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <Image src="/art.svg" alt="InsightAnon" width={500} height={500} className="w-48" />
+        <span className="text-gray-400 text-xl font-medium">Connect your wallet to view queries.</span>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
