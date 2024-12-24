@@ -21,7 +21,7 @@ export function OrganizationCard({ organization }: OrganizationCardProps) {
           <div className="flex items-center gap-2 cursor-pointer">
             <CopyToClipboard text={organization.id}>
               <span className="flex items-center gap-2">
-                <p className="text-sm text-gray-300">Share Invite</p>
+                <p className="text-sm text-gray-300">Organization ID</p>
                 <Copy className="w-4 h-4 text-gray-300" />
               </span>
             </CopyToClipboard>
