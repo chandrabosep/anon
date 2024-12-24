@@ -13,9 +13,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Building2, LayoutDashboard } from "lucide-react";
+import { Building2, LayoutDashboard, MessageSquarePlus } from "lucide-react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Separator } from "./ui/separator";
+import DashboardLayout from "@/app/(home)/layout";
 
 const font = Pixelify_Sans({
   subsets: ["latin"],
@@ -24,14 +25,14 @@ const font = Pixelify_Sans({
 
 const items = [
   {
+    title: "Queries",
+    url: "/queries",
+    icon: MessageSquarePlus,
+  },
+  {
     title: "Dashboard",
     url: "/dashboard",
     icon: LayoutDashboard,
-  },
-  {
-    title: "Organization",
-    url: "/organization",
-    icon: Building2,
   },
 ];
 
