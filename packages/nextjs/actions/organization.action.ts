@@ -5,8 +5,7 @@ import prisma from "../lib/db";
 export async function createOrganization(data: {
   name: string;
   walletAddress: string;
-  collectionId: string;
-  collectionHash: string;
+  collectionId: number;
 }) {
   if (!data.name || !data.walletAddress) {
     throw new Error("Invalid organization data.");
@@ -17,8 +16,7 @@ export async function createOrganization(data: {
       data: {
         name: data.name,
         walletAddress: data.walletAddress,
-        collectionId: `col-${crypto.randomUUID()}`,
-        collectionHash: crypto.randomUUID(),
+        collectionId: data.collectionId,
       },
     });
 

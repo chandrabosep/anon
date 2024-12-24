@@ -1,3 +1,4 @@
+// @ts-nocheck
 "use client";
 
 import { BELLECOUR_CHAIN_ID, IEXEC_APP, createArrayBufferFromFile } from "@/utils/iExec/utils";
@@ -5,6 +6,14 @@ import { IExecDataProtector, ProtectedData } from "@iexec/dataprotector";
 import JSZip from "jszip";
 import { toast } from "sonner";
 import { useSwitchChain } from "wagmi";
+
+// @ts-nocheck
+
+// @ts-nocheck
+
+// @ts-nocheck
+
+const dataProtector = new IExecDataProtector(window.ethereum);
 
 export const useiExec = () => {
   const { switchChain } = useSwitchChain();
@@ -15,7 +24,6 @@ export const useiExec = () => {
         method: "eth_requestAccounts",
       });
 
-      // @ ts-ignore
       const userAddress = accounts?.[0];
 
       if (!userAddress) {
@@ -44,7 +52,7 @@ export const useiExec = () => {
   };
 
   const createFile = async (data: string, dataName: string) => {
-    if (!data || !dataName)
+    if (!data || !dataName) {
       return {
         data: null,
         error: {
@@ -52,8 +60,10 @@ export const useiExec = () => {
           value: true,
         },
       };
-    var blob = new Blob([data], { type: "text/plain" });
-    var file = new File([blob], dataName, { type: "text/plain" });
+    }
+
+    const blob = new Blob([data], { type: "text/plain" });
+    const file = new File([blob], dataName, { type: "text/plain" });
 
     return { data: file, error: null };
   };
@@ -112,14 +122,15 @@ export const useiExec = () => {
     const { data: userAddress, error } = await checkUserAddress();
     const { data: chainId, error: chainIdError } = await checkCorrectChain();
 
-    if (ethProviderError?.value || error?.value || chainIdError?.value)
+    if (ethProviderError?.value || error?.value || chainIdError?.value) {
       return {
         data: null,
         error: {
-          message: "Error checking user address, chain ID or ETH provider",
+          message: "Error checking user address, chain ID, or ETH provider",
           value: true,
         },
       };
+    }
 
     if (!ethProvider || !userAddress || !chainId) {
       return {
@@ -146,7 +157,7 @@ export const useiExec = () => {
       const { data: file, error: fileError } = await createFile(dataString, dataName);
       const { data: session, error: sessionError } = await checkSession();
 
-      if (sessionError?.value || fileError?.value || !session)
+      if (sessionError?.value || fileError?.value || !session) {
         return {
           data: null,
           error: {
@@ -154,6 +165,7 @@ export const useiExec = () => {
             value: true,
           },
         };
+      }
 
       if (!file) {
         return {
@@ -177,8 +189,8 @@ export const useiExec = () => {
       }
 
       const bufferFile = await createArrayBufferFromFile(file);
-      const dataProtector = new IExecDataProtector(window.ethereum);
-      const protectedData = await dataProtector.core.protectData({
+
+      const protectedData = await dataProtector.protectData({
         name: file.name,
         data: {
           file: bufferFile,
@@ -206,7 +218,7 @@ export const useiExec = () => {
     try {
       const { data: session, error: sessionError } = await checkSession();
 
-      if (sessionError?.value || !session)
+      if (sessionError?.value || !session) {
         return {
           data: null,
           error: {
@@ -214,10 +226,9 @@ export const useiExec = () => {
             value: true,
           },
         };
+      }
 
-      const dataProtector = new IExecDataProtector(window.ethereum);
-
-      const protectedDataList = await dataProtector.core.getProtectedData({
+      const protectedDataList = await dataProtector.fetchProtectedData({
         owner: session.userAddress,
       });
 
@@ -250,7 +261,7 @@ export const useiExec = () => {
     try {
       const { data: session, error: sessionError } = await checkSession();
 
-      if (sessionError?.value || !session)
+      if (sessionError?.value || !session) {
         return {
           data: null,
           error: {
@@ -258,10 +269,9 @@ export const useiExec = () => {
             value: true,
           },
         };
+      }
 
-      const dataProtector = new IExecDataProtector(window.ethereum);
-
-      const grantedAccess = await dataProtector.core.grantAccess({
+      const grantedAccess = await dataProtector.grantAccess({
         protectedData: _protectedData,
         authorizedApp: IEXEC_APP,
         authorizedUser: _authorizedUser,
@@ -285,26 +295,26 @@ export const useiExec = () => {
   };
 
   const decompressArrayBuffer = async (input: ArrayBuffer, fileName: string): Promise<Uint8Array> => {
-    // Load the ZIP archive
-    const zip = await JSZip.loadAsync(input);
+    try {
+      const zip = await JSZip.loadAsync(input);
+      const file = zip.file(fileName);
 
-    // Find the specific file inside the ZIP
-    const file = zip.file(fileName);
+      if (!file) {
+        throw new Error(`File "${fileName}" not found in the ZIP archive.`);
+      }
 
-    if (!file) {
-      throw new Error(`File "${fileName}" not found in the ZIP archive.`);
+      const content = await file.async("uint8array");
+      return content;
+    } catch (error) {
+      throw new Error("Error decompressing ZIP archive");
     }
-
-    // Extract the file content as Uint8Array
-    const content = await file.async("uint8array");
-    return content;
   };
 
   const decryptData = async (_protectedData: string) => {
     try {
       const { data: session, error: sessionError } = await checkSession();
 
-      if (sessionError?.value || !session)
+      if (sessionError?.value || !session) {
         return {
           data: null,
           error: {
@@ -312,10 +322,9 @@ export const useiExec = () => {
             value: true,
           },
         };
+      }
 
-      const dataProtectorCore = new IExecDataProtector(window.ethereum);
-
-      const processProtectedDataResponse = await dataProtectorCore.core.processProtectedData({
+      const processProtectedDataResponse = await dataProtector.processProtectedData({
         protectedData: _protectedData,
         app: IEXEC_APP,
         maxPrice: 0,
@@ -331,41 +340,40 @@ export const useiExec = () => {
       };
     } catch (error) {
       return {
+        data: null,
         error: {
-          message: `Error decrypting data` + error,
+          message: "Error decrypting data",
           value: true,
         },
       };
     }
   };
 
-  const consumeData = async (_protectedData: string) => {
-    const { data: session, error: sessionError } = await checkSession();
+  // const consumeData = async (_protectedData: string) => {
+  //   const { data: session, error: sessionError } = await checkSession();
 
-    if (sessionError?.value || !session)
-      return {
-        data: null,
-        error: {
-          message: "Error creating file or checking session",
-          value: true,
-        },
-      };
+  //   if (sessionError?.value || !session) {
+  //     return {
+  //       data: null,
+  //       error: {
+  //         message: "Error creating file or checking session",
+  //         value: true,
+  //       },
+  //     };
+  //   }
 
-    const dataProtector = new IExecDataProtector(window.ethereum);
-    const dataProtectorSharing = dataProtector.sharing;
+  //   const consumeProtectedDataResult = await dataProtector.pro({
+  //     protectedData: _protectedData,
+  //     app: IEXEC_APP,
+  //   });
 
-    const consumeProtectedDataResult = await dataProtectorSharing.consumeProtectedData({
-      protectedData: "0x6e10c706999f7dd6e4c05b1937a9cc47945020d4",
-      app: IEXEC_APP,
-    });
-
-    return { data: consumeProtectedDataResult.result };
-  };
+  //   return { data: consumeProtectedDataResult.result };
+  // };
 
   const createCollection = async () => {
     const { data: session, error: sessionError } = await checkSession();
 
-    if (sessionError?.value || !session)
+    if (sessionError?.value || !session) {
       return {
         data: null,
         error: {
@@ -373,19 +381,17 @@ export const useiExec = () => {
           value: true,
         },
       };
+    }
 
-    const dataProtector = new IExecDataProtector(window.ethereum);
-    const dataProtectorSharing = dataProtector.sharing;
+    const createCollectionResult = await dataProtector.createCollection();
 
-    const createCollectionResult = await dataProtectorSharing.createCollection();
-
-    console.log(createCollectionResult);
+    return createCollectionResult;
   };
 
-  const addDataToCollection = async () => {
+  const subscribeToCollection = async (collectionId: number) => {
     const { data: session, error: sessionError } = await checkSession();
 
-    if (sessionError?.value || !session)
+    if (sessionError?.value || !session) {
       return {
         data: null,
         error: {
@@ -393,22 +399,21 @@ export const useiExec = () => {
           value: true,
         },
       };
+    }
 
-    const dataProtector = new IExecDataProtector(window.ethereum);
-    const dataProtectorSharing = dataProtector.sharing;
-    const { txHash } = await dataProtectorSharing.addToCollection({
-      protectedData: "0x6e10c706999f7dd6e4c05b1937a9cc47945020d4",
-      collectionId: 165,
-      addOnlyAppWhitelist: "0x256bcd881c33bdf9df952f2a0148f27d439f2e64",
+    const subscribeToCollectionResult = await dataProtector.setSubscriptionParams({
+      collectionTokenId: Number(collectionId),
+      priceInNRLC: BigInt(0),
+      durationInSeconds: 1000000000000,
     });
 
-    console.log(txHash);
+    return subscribeToCollectionResult;
   };
 
-  const setProtectedDataToRenting = async () => {
+  const addDataToCollection = async (protectedData: string, collectionId: string) => {
     const { data: session, error: sessionError } = await checkSession();
 
-    if (sessionError?.value || !session)
+    if (sessionError?.value || !session) {
       return {
         data: null,
         error: {
@@ -416,81 +421,23 @@ export const useiExec = () => {
           value: true,
         },
       };
+    }
 
-    const dataProtector = new IExecDataProtector(window.ethereum);
-    const dataProtectorSharing = dataProtector.sharing;
-
-    const setForRentingResult = await dataProtectorSharing.setProtectedDataToRenting({
-      protectedData: "0x6e10c706999f7dd6e4c05b1937a9cc47945020d4",
-      price: 0, // 1 nRLC
-      duration: 60 * 60 * 24 * 30, // 30 days
+    const addToCollectionResult = await dataProtector.addToCollection({
+      protectedData: protectedData,
+      collectionId: collectionId,
     });
 
-    console.log(setForRentingResult);
+    return addToCollectionResult;
   };
 
-  const getrotectedDataInCollection = async () => {
-    const { data: session, error: sessionError } = await checkSession();
-
-    if (sessionError?.value || !session)
-      return {
-        data: null,
-        error: {
-          message: "Error creating file or checking session",
-          value: true,
-        },
-      };
-
-    const dataProtector = new IExecDataProtector(window.ethereum);
-    const dataProtectorSharing = dataProtector.sharing;
-
-    const oneProtectedData = await dataProtectorSharing.getProtectedDataInCollections({
-      protectedData: "0x6e10c706999f7dd6e4c05b1937a9cc47945020d4",
+  const createCollectionAndSubscribe = async () => {
+    const collection = await createCollection().then(async res => {
+      const subscribeToCollectionResult = await subscribeToCollection(res?.collectionTokenId as number);
+      return { collection: res, subscribeToCollectionResult };
     });
-
-    console.log(oneProtectedData);
-  };
-
-  const removeProtectedDataFromCollection = async () => {
-    const { data: session, error: sessionError } = await checkSession();
-
-    if (sessionError?.value || !session)
-      return {
-        data: null,
-        error: {
-          message: "Error creating file or checking session",
-          value: true,
-        },
-      };
-
-    const dataProtector = new IExecDataProtector(window.ethereum);
-    const dataProtectorSharing = dataProtector.sharing;
-
-    const { txHash } = await dataProtectorSharing.removeProtectedDataFromCollection({
-      protectedData: "0x6e10c706999f7dd6e4c05b1937a9cc47945020d4",
-    });
-  };
-
-  const rentProtectedData = async () => {
-    const { data: session, error: sessionError } = await checkSession();
-
-    if (sessionError?.value || !session)
-      return {
-        data: null,
-        error: {
-          message: "Error creating file or checking session",
-          value: true,
-        },
-      };
-
-    const dataProtector = new IExecDataProtector(window.ethereum);
-    const dataProtectorSharing = dataProtector.sharing;
-
-    const rentResult = await dataProtectorSharing.rentProtectedData({
-      protectedData: "0x123abc...",
-      price: 1, // 1 nRLC
-      duration: 60 * 60 * 24 * 2, // 172,800 sec = 2 days
-    });
+    console.log(collection);
+    return collection;
   };
 
   return {
@@ -498,11 +445,9 @@ export const useiExec = () => {
     getMyProtectedData,
     grantAccess,
     decryptData,
-    consumeData,
+    // consumeData,
     createCollection,
     addDataToCollection,
-    setProtectedDataToRenting,
-    getrotectedDataInCollection,
-    removeProtectedDataFromCollection,
+    createCollectionAndSubscribe,
   };
 };
