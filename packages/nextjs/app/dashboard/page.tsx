@@ -1,3 +1,5 @@
+"use client";
+
 import { ReputationChart } from "@/components/ReputationChart";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowUp, MessageSquarePlus, Star, ThumbsUp } from "lucide-react";
