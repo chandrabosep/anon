@@ -9,6 +9,7 @@ import { createOrganization } from "@/actions/organization.action";
 import { useiExec } from "@/hooks/iExec/useiExec";
 import { Plus } from "lucide-react";
 import { useAccount } from "wagmi";
+import { useRouter } from "next/navigation";
 
 // @ts-nocheck
 
@@ -21,6 +22,7 @@ export function CreateOrganizationForm() {
   const { address } = useAccount();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const { createCollectionAndSubscribe } = useiExec();
 
@@ -49,6 +51,7 @@ export function CreateOrganizationForm() {
       setError("Failed to create organization. Please try again.");
     } finally {
       setLoading(false);
+      router.refresh("/dashboard");
     }
   };
 

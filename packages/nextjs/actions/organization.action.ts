@@ -26,3 +26,11 @@ export async function createOrganization(data: {
     throw new Error("Failed to create organization.");
   }
 }
+
+
+export async function getOrganization(address : string) {
+  const organization = await prisma.organization.findMany({
+    where: { walletAddress: address },
+  });
+  return organization;
+}

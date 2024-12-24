@@ -16,18 +16,27 @@ export function OrganizationCard({ organization }: OrganizationCardProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 mb-4">
             <Building2 className="w-6 h-6 text-blue-600" />
-            <h3 className="text-lg font-semibold ">{organization.title}</h3>
+            <h3 className="text-lg font-semibold ">{organization.name}</h3>
           </div>
           <div className="flex items-center gap-2 cursor-pointer">
             <CopyToClipboard text={organization.id}>
               <span className="flex items-center gap-2">
-                <p className="text-sm text-gray-300">Organization ID</p>
+                <p className="text-sm text-gray-300">Organization ID {organization.collectionId}</p>
                 <Copy className="w-4 h-4 text-gray-300" />
               </span>
             </CopyToClipboard>
           </div>
         </div>
-        <div className="text-sm text-gray-300">Created {new Date(organization.createdAt).toLocaleDateString()}</div>
+        <div className="text-sm text-gray-300">
+          Created{" "}
+          {new Date(organization.createdAt).toLocaleString("en-US", {
+            hour: "numeric",
+            minute: "numeric",
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          })}
+        </div>
       </CardHeader>
     </Card>
   );

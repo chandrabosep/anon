@@ -1,21 +1,17 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CreateOrganizationForm } from "@/components/organization/CreateOrganizationForm";
 import { OrganizationCard } from "@/components/organization/OrganizationCard";
 import { VerificationRequestCard } from "@/components/organization/VerificationRequestCard";
 import { useAccount } from "wagmi";
 import Image from "next/image";
+import { getOrganization } from "@/actions/organization.action";
 
 function Dashboard() {
   const { address, isConnected } = useAccount();
-  const [organizations, setOrganizations] = useState<any[]>([
-    {
-      id: 1,
-      title: "Organization 1",
-      createdAt: new Date(),
-    },
-  ]);
+  const [organizations, setOrganizations] = useState<any[]>([]);
+
   const [verificationRequests] = useState<any[]>([
     {
       id: "1",
@@ -34,6 +30,14 @@ function Dashboard() {
       createdAt: new Date(),
     },
   ]);
+
+  useEffect(() => {
+    const fetchOrganizations = async () => {
+      const organizations = await getOrganization(address as string);
+      setOrganizations(organizations.reverse());
+    };
+    fetchOrganizations();
+  }, [address]);
 
   if (!isConnected) {
     return (
