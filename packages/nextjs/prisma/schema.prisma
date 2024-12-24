@@ -14,9 +14,42 @@ datasource db {
 }
 
 model User {
-  id String @id @default(cuid())
-  email String @unique
-  name String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            Int            @id @default(autoincrement())
+  walletAddress String         @unique
+  createdAt     DateTime       @default(now())
+  organizations Organization[] @relation("UserOrganizations")
+  queries       Query[]
+}
+
+model Organization {
+  id             Int         @id @default(autoincrement())
+  name           String
+  walletAddress  String // Wallet address of the organization owner or main account
+  createdAt      DateTime    @default(now())
+  collectionId   String // Unique collection ID associated with the organization (immutable)
+  collectionHash String // Hash of the collection data stored after creation
+  members        User[]      @relation("UserOrganizations")
+  queries        Query[]
+  collection     Collection?
+}
+
+model Query {
+  id             Int          @id @default(autoincrement())
+  title          String
+  description    String
+  status         String // e.g., pending, resolved, etc.
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  userId         Int
+  organizationId Int
+  user           User         @relation(fields: [userId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id])
+}
+
+model Collection {
+  id             String       @id @default(uuid()) // UUID for the collection
+  organizationId Int          @unique
+  hash           String // Hash of the collection data
+  createdAt      DateTime     @default(now())
+  organization   Organization @relation(fields: [organizationId], references: [id])
 }
