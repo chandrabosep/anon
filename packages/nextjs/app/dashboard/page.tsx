@@ -47,7 +47,7 @@ export default function MonochromeFeedbackUI() {
   return (
     <div className="min-h-screen">
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="px-4 py-8">
         {/* Reputation Score */}
         <Card className="mb-8 bg-white/5 border-white/20 pt-4">
           <CardContent className="flex items-center justify-between">

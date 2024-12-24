@@ -34,7 +34,7 @@
 
     return (
         <div className="min-h-screen p-6">
-        <div className="max-w-6xl mx-auto">
+        <>
             <h1 className="text-3xl font-bold mb-8">Organization Dashboard</h1>
 
             <CreateOrganizationForm />
@@ -61,7 +61,7 @@
                 </div>
             </div>
             </div>
-        </div>
+        </>
         </div>
     );
     }
