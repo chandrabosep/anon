@@ -37,7 +37,6 @@ model Query {
   description    String
   status         String // e.g., pending, resolved, etc.
   createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
   userId         Int
   organizationId Int
   user           User         @relation(fields: [userId], references: [id])

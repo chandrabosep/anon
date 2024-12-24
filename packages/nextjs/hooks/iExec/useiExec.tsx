@@ -1,4 +1,3 @@
-// @ts-nocheck
 "use client";
 
 import { BELLECOUR_CHAIN_ID, IEXEC_APP, createArrayBufferFromFile } from "@/utils/iExec/utils";
@@ -6,12 +5,6 @@ import { IExecDataProtector, ProtectedData } from "@iexec/dataprotector";
 import JSZip from "jszip";
 import { toast } from "sonner";
 import { useSwitchChain } from "wagmi";
-
-// @ts-nocheck
-
-// @ts-nocheck
-
-// @ts-nocheck
 
 const dataProtector = new IExecDataProtector(window.ethereum);
 
@@ -440,6 +433,27 @@ export const useiExec = () => {
     return collection;
   };
 
+  const getSubscribedData = async (collectionId: number) => {
+    console.log("collectionId", collectionId);
+    const { data: session, error: sessionError } = await checkSession();
+
+    if (sessionError?.value || !session) {
+      return {
+        data: null,
+        error: {
+          message: "Error creating file or checking session",
+          value: true,
+        },
+      };
+    }
+    console.log("collectionId222", collectionId);
+    const subscribedData = await dataProtector.getSubscribers({
+      collectionTokenId: collectionId,
+    });
+    console.log("subscribedData", subscribedData);
+    return subscribedData;
+  };
+
   return {
     encryptAndPushData,
     getMyProtectedData,
@@ -449,5 +463,6 @@ export const useiExec = () => {
     createCollection,
     addDataToCollection,
     createCollectionAndSubscribe,
+    getSubscribedData,
   };
 };

@@ -2,11 +2,7 @@
 
 import prisma from "../lib/db";
 
-export async function createOrganization(data: {
-  name: string;
-  walletAddress: string;
-  collectionId: number;
-}) {
+export async function createOrganization(data: { name: string; walletAddress: string; collectionId: number }) {
   if (!data.name || !data.walletAddress) {
     throw new Error("Invalid organization data.");
   }
@@ -27,10 +23,34 @@ export async function createOrganization(data: {
   }
 }
 
-
-export async function getOrganization(address : string) {
+export async function getOrganizations(address: string) {
   const organization = await prisma.organization.findMany({
     where: { walletAddress: address },
   });
   return organization;
+}
+
+export async function getCollectionIdByWalletAddress(walletAddress: string) {
+  try {
+    const organization = await prisma.organization.findFirst({
+      where: {
+        walletAddress: walletAddress,
+      },
+      select: {
+        name: true,
+        collectionId: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    if (!organization) {
+      throw new Error("Organization not found for this wallet address.");
+    }
+
+    return organization;
+  } catch (error) {
+    throw new Error(`Error fetching collectionId: ${error}`);
+  }
 }

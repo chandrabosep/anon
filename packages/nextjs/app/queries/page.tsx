@@ -1,18 +1,25 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
+import { getCollectionIdByWalletAddress } from "@/actions/organization.action";
 import { ReputationChart } from "@/components/ReputationChart";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ArrowUp, MessageSquarePlus, PlusCircle, ThumbsUp } from "lucide-react";
+import { ArrowUp, MessageSquarePlus, PlusCircle, ThumbsUp, Users } from "lucide-react";
 import { useAccount } from "wagmi";
+import { useiExec } from "@/hooks/iExec/useiExec";
+
 
 export default function MonochromeFeedbackUI() {
   const { isConnected, address } = useAccount();
-  const organizationName = "TechNova Industries";
+  const [organization, setOrganization] = useState<any | null>(null);
+  const [subscribedData, setSubscribedData] = useState<any | null>(null);
   const reputationScore = 2;
-
+  
+  const { getSubscribedData } = useiExec();
+ 
   const feedbackItems = [
     {
       id: 1,
@@ -22,48 +29,31 @@ export default function MonochromeFeedbackUI() {
       date: "December 15, 2024 1:30 PM",
       likes: 0,
     },
-    // Placeholder items
-    {
-      id: 2,
-      title: "Communication issues",
-      content: "We need more transparent communication channels",
-      source: "Internal Survey",
-      date: "December 14, 2024 10:15 AM",
-      likes: 5,
-    },
-    {
-      id: 3,
-      title: "Positive feedback",
-      content: "Recent team-building activities have been great for morale",
-      source: "Feedback Box",
-      date: "December 13, 2024 3:45 PM",
-      likes: 12,
-    },
-    {
-      id: 4,
-      title: "Work-life balance",
-      content: "Consider implementing flexible working hours",
-      source: "HR Portal",
-      date: "December 12, 2024 9:00 AM",
-      likes: 8,
-    },
-    {
-      id: 3,
-      title: "Positive feedback",
-      content: "Recent team-building activities have been great for morale",
-      source: "Feedback Box",
-      date: "December 13, 2024 3:45 PM",
-      likes: 12,
-    },
-    {
-      id: 4,
-      title: "Work-life balance",
-      content: "Consider implementing flexible working hours",
-      source: "HR Portal",
-      date: "December 12, 2024 9:00 AM",
-      likes: 8,
-    },
   ];
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (address) {
+        try {
+          // Fetch the organization based on wallet address
+          const fetchedOrganization = await getCollectionIdByWalletAddress(address);
+          setOrganization(fetchedOrganization);
+
+          // Fetch the subscribed data once the organization is fetched
+          if (fetchedOrganization?.collectionId) {
+            const data = await getSubscribedData(fetchedOrganization.collectionId);
+            setSubscribedData(data);
+          }
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      }
+    };
+
+    if (isConnected) {
+      fetchData();
+    }
+  }, [address, isConnected]);
 
   if (!isConnected) {
     return (
@@ -81,9 +71,15 @@ export default function MonochromeFeedbackUI() {
         {/* Reputation Score */}
         <Card className="bg-[#10141D] border-white/20 pt-4">
           <CardContent className="flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-bold">{organizationName}</h2>
-              <p className="text-sm text-gray-300">Organization Reputation</p>
+            <div className="flex flex-col gap-3">
+              <h2 className="text-3xl font-bold capitalize">
+                {organization?.name} <span className="text-gray-300 text-base">({organization?.collectionId})</span>
+              </h2>
+
+              <div className="bg-gray-300/10 rounded-sm px-4 py-1 flex items-center gap-2 w-fit">
+                <Users className="size-4" />
+                <span className="text-gray-300 ">{organization?.members?.length || 0}</span>
+              </div>
             </div>
             <div className="flex items-center space-x-2">
               <ReputationChart score={reputationScore} />

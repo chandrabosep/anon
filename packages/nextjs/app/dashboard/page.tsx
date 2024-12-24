@@ -6,7 +6,7 @@ import { OrganizationCard } from "@/components/organization/OrganizationCard";
 import { VerificationRequestCard } from "@/components/organization/VerificationRequestCard";
 import { useAccount } from "wagmi";
 import Image from "next/image";
-import { getOrganization } from "@/actions/organization.action";
+import { getOrganizations } from "@/actions/organization.action";
 
 function Dashboard() {
   const { address, isConnected } = useAccount();
@@ -33,7 +33,7 @@ function Dashboard() {
 
   useEffect(() => {
     const fetchOrganizations = async () => {
-      const organizations = await getOrganization(address as string);
+      const organizations = await getOrganizations(address as string);
       setOrganizations(organizations.reverse());
     };
     fetchOrganizations();
