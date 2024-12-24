@@ -12,13 +12,18 @@ import { Header } from "~~/components/Header";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { useInitializeNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
 import { wagmiConfig } from "~~/services/web3/wagmiConfig";
+import { DM_Sans } from "next/font/google";
+
+const font = DM_Sans({
+  subsets: ["latin"],
+});
 
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   useInitializeNativeCurrencyPrice();
 
   return (
     <>
-      <div className={`flex flex-col min-h-screen `}>
+      <div className={`flex flex-col min-h-screen ${font.className}`}>
         <Header />
         <main className="relative flex flex-col flex-1">{children}</main>
         <Footer />
