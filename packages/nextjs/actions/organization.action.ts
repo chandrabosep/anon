@@ -24,13 +24,26 @@ export async function createOrganization(data: { name: string; walletAddress: st
 }
 
 export async function getOrganizations(address: string) {
-  const organization = await prisma.organization.findMany({
-    where: { walletAddress: address },
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
-  return organization;
+  try {
+    // Find organizations where the user is a member
+    const organizations = await prisma.organization.findMany({
+      where: {
+        members: {
+          some: {
+            walletAddress: address, // Check if the user is a member
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc', // Order by creation date, descending
+      },
+    });
+
+    return organizations;
+  } catch (error) {
+    console.error("Error fetching organizations for user:", error);
+    throw new Error("Failed to fetch organizations.");
+  }
 }
 
 export async function getCollectionIdByWalletAddress(walletAddress: string) {

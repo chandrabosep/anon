@@ -14,7 +14,7 @@ function Dashboard() {
   const [organizations, setOrganizations] = useState<any[]>([]);
   const [queries, setQueries] = useState<any[]>([]);
 
-  const RecentOrgcollectionId = organizations[0]?.collectionId
+  const RecentOrgcollectionId = organizations[0]?.collectionId;
 
   useEffect(() => {
     const fetchOrganizations = async () => {
@@ -65,7 +65,9 @@ function Dashboard() {
               {queries.map(query => (
                 <VerificationRequestCard key={query.id} request={query} collectionId={RecentOrgcollectionId} />
               ))}
-              {queries.length === 0 && <p className="text-gray-500 text-center py-8">No queries yet!</p>}
+              {queries.length === 0 && (
+                <p className="text-gray-500 text-center py-8">{`No organizations found. You haven't created any organizations yet`}</p>
+              )}
             </div>
           </div>
         </div>

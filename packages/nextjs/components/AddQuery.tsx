@@ -27,7 +27,6 @@ export default function AddQuery({ collectionId }: { collectionId: number }) {
   };
 
   const onCancel = () => {
-    // Reset form and close dialog
     setTitle("");
     setContent("");
     setOpen(false);
@@ -37,7 +36,7 @@ export default function AddQuery({ collectionId }: { collectionId: number }) {
     <>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button>
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
             <PlusCircle className="size-5" />
             Add Query
           </Button>
