@@ -1,35 +1,18 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import Image from "next/image";
+import { getOrganizations } from "@/actions/organization.action";
+import { getQueries } from "@/actions/queries.action";
 import { CreateOrganizationForm } from "@/components/organization/CreateOrganizationForm";
 import { OrganizationCard } from "@/components/organization/OrganizationCard";
 import { VerificationRequestCard } from "@/components/organization/VerificationRequestCard";
 import { useAccount } from "wagmi";
-import Image from "next/image";
-import { getOrganizations } from "@/actions/organization.action";
 
 function Dashboard() {
   const { address, isConnected } = useAccount();
   const [organizations, setOrganizations] = useState<any[]>([]);
-
-  const [verificationRequests] = useState<any[]>([
-    {
-      id: "1",
-      organizationId: "1",
-      title: "Business License Verification",
-      content: "Requesting verification of our business license and company registration documents.",
-      status: "pending",
-      createdAt: new Date(),
-    },
-    {
-      id: "2",
-      organizationId: "2",
-      title: "Tax ID Verification",
-      content: "Need verification of our tax identification number and related documentation.",
-      status: "approved",
-      createdAt: new Date(),
-    },
-  ]);
+  const [queries, setQueries] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchOrganizations = async () => {
@@ -37,6 +20,14 @@ function Dashboard() {
       setOrganizations(organizations.reverse());
     };
     fetchOrganizations();
+
+    const fetchQueries = async () => {
+      if (address) {
+        const queries = await getQueries(address as string);
+        setQueries(queries);
+      }
+    };
+    fetchQueries();
   }, [address]);
 
   if (!isConnected) {
@@ -69,9 +60,10 @@ function Dashboard() {
           <div>
             <h2 className="text-2xl font-semibold  mb-4">Verification Requests</h2>
             <div className="grid gap-4">
-              {verificationRequests.map(request => (
-                <VerificationRequestCard key={request.id} request={request} />
+              {queries.map(query => (
+                <VerificationRequestCard key={query.id} request={query} />
               ))}
+              {queries.length === 0 && <p className="text-gray-500 text-center py-8">No queries yet!</p>}
             </div>
           </div>
         </div>

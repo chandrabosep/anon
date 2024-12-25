@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useiExec } from "@/hooks/iExec/useiExec";
+import { useGlobalState } from "@/services/store/store";
 import { ArrowUp, MessageSquarePlus, PlusCircle, ThumbsUp, Users } from "lucide-react";
 import { useAccount } from "wagmi";
 
@@ -17,6 +18,8 @@ export default function MonochromeFeedbackUI() {
   const [organization, setOrganization] = useState<any | null>(null);
   const [subscribedData, setSubscribedData] = useState<any | null>(null);
   const reputationScore = 2;
+
+  const { setCollectionId } = useGlobalState();
 
   const { getSubscribedData } = useiExec();
 
@@ -38,7 +41,7 @@ export default function MonochromeFeedbackUI() {
           // Fetch the organization based on wallet address
           const fetchedOrganization = await getCollectionIdByWalletAddress(address);
           setOrganization(fetchedOrganization);
-
+          setCollectionId(fetchedOrganization?.collectionId);
           // Fetch the subscribed data once the organization is fetched
           if (fetchedOrganization?.collectionId) {
             const data = await getSubscribedData(fetchedOrganization.collectionId);

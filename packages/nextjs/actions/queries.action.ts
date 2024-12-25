@@ -31,3 +31,32 @@ export async function createQuery(data: { title: string; content: string; collec
         throw new Error("Failed to create query. Please try again later.");
     }
 }
+
+export async function getQueries(walletAddress: string) {
+    const organization = await prisma.organization.findFirst({
+        where: { walletAddress },
+        orderBy: {
+            createdAt: 'desc',
+        },
+    });
+
+    if (!organization) {
+        throw new Error("Organization not found. Cannot get queries.");
+    }
+
+    const queries = await prisma.query.findMany({
+        where: {
+            organizationId: organization.id,
+            status: 'PENDING',
+        },
+    });
+
+    return queries;
+}
+
+export async function acceptQuery(queryId: number) {
+    await prisma.query.update({
+        where: { id: queryId },
+        data: { status: 'APPROVED' },
+    });
+}

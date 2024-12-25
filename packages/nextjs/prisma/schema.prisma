@@ -23,7 +23,7 @@ model User {
 model Organization {
   id            Int      @id @default(autoincrement())
   name          String
-  walletAddress String
+  walletAddress String  
   createdAt     DateTime @default(now())
   collectionId  Int      @unique
   members       User[]   @relation("UserOrganizations")
@@ -37,6 +37,13 @@ model Query {
   createdAt      DateTime     @default(now())
   organizationId Int
   organization   Organization @relation(fields: [organizationId], references: [id])
+  status         QueryStatus  @default(PENDING)
 
   @@index([organizationId])
+}
+
+enum QueryStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
