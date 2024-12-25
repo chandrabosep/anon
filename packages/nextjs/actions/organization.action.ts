@@ -44,6 +44,7 @@ export async function getCollectionIdByWalletAddress(walletAddress: string) {
           select: {
             name: true,
             collectionId: true,
+            members: true, // Include the members to get their count
           },
           orderBy: {
             createdAt: 'desc', 
@@ -57,7 +58,13 @@ export async function getCollectionIdByWalletAddress(walletAddress: string) {
       throw new Error("No organizations found for this user.");
     }
 
-    return user.organizations[0];
+    const recentOrganization = user.organizations[0];
+    const totalMembers = recentOrganization.members.length; // Get the number of members
+
+    return {
+      ...recentOrganization,
+      totalMembers, // Add totalMembers to the returned object
+    };
   } catch (error) {
     console.error("Error finding user by wallet address:", error);
     throw new Error(`Error fetching user: ${error}`);
