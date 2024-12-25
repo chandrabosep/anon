@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 
 import { BELLECOUR_CHAIN_ID, IEXEC_APP, createArrayBufferFromFile } from "@/utils/iExec/utils";
@@ -183,7 +184,7 @@ export const useiExec = () => {
 
       const bufferFile = await createArrayBufferFromFile(file);
 
-      const protectedData = await dataProtector.protectData({
+      const protectedData = await dataProtector.core.protectData({
         name: file.name,
         data: {
           file: bufferFile,
@@ -221,7 +222,7 @@ export const useiExec = () => {
         };
       }
 
-      const protectedDataList = await dataProtector.fetchProtectedData({
+      const protectedDataList = await dataProtector.core.getProtectedData({
         owner: session.userAddress,
       });
 
@@ -264,7 +265,7 @@ export const useiExec = () => {
         };
       }
 
-      const grantedAccess = await dataProtector.grantAccess({
+      const grantedAccess = await dataProtector.core.grantAccess({
         protectedData: _protectedData,
         authorizedApp: IEXEC_APP,
         authorizedUser: _authorizedUser,
@@ -317,7 +318,7 @@ export const useiExec = () => {
         };
       }
 
-      const processProtectedDataResponse = await dataProtector.processProtectedData({
+      const processProtectedDataResponse = await dataProtector.core.processProtectedData({
         protectedData: _protectedData,
         app: IEXEC_APP,
         maxPrice: 0,
@@ -376,7 +377,7 @@ export const useiExec = () => {
       };
     }
 
-    const createCollectionResult = await dataProtector.createCollection();
+    const createCollectionResult = await dataProtector.sharing.createCollection();
 
     return createCollectionResult;
   };
@@ -394,39 +395,20 @@ export const useiExec = () => {
       };
     }
 
-    const subscribeToCollectionResult = await dataProtector.setSubscriptionParams({
-      collectionTokenId: Number(collectionId),
-      priceInNRLC: BigInt(0),
-      durationInSeconds: 1000000000000,
+    const subscribeToCollectionResult = await dataProtector.sharing.setSubscriptionParams({
+      collectionId: collectionId,
+      price: 0,
+      duration: 1000000000000,
     });
 
     return subscribeToCollectionResult;
   };
 
-  const addDataToCollection = async (protectedData: string, collectionId: string) => {
-    const { data: session, error: sessionError } = await checkSession();
-
-    if (sessionError?.value || !session) {
-      return {
-        data: null,
-        error: {
-          message: "Error creating file or checking session",
-          value: true,
-        },
-      };
-    }
-
-    const addToCollectionResult = await dataProtector.addToCollection({
-      protectedData: protectedData,
-      collectionId: collectionId,
-    });
-
-    return addToCollectionResult;
-  };
 
   const createCollectionAndSubscribe = async () => {
     const collection = await createCollection().then(async res => {
-      const subscribeToCollectionResult = await subscribeToCollection(res?.collectionTokenId as number);
+      console.log("res", res);  
+      const subscribeToCollectionResult = await subscribeToCollection(res?.collectionId as number);
       return { collection: res, subscribeToCollectionResult };
     });
     console.log(collection);
@@ -447,12 +429,35 @@ export const useiExec = () => {
       };
     }
     console.log("collectionId222", collectionId);
-    const subscribedData = await dataProtector.getSubscribers({
-      collectionTokenId: collectionId,
+    const subscribedData = await dataProtector.sharing.getCollectionSubscriptions({
+      collectionId: collectionId,
     });
     console.log("subscribedData", subscribedData);
     return subscribedData;
   };
+
+  const addDataToCollection = async (protectedData: any, collectionId: number) => {
+    const { data: session, error: sessionError } = await checkSession();
+
+    if (sessionError?.value || !session) {
+      return {
+        data: null,
+        error: {
+          message: "Error creating file or checking session",
+          value: true,
+        },
+      };
+    }
+
+    const addToCollectionResult = await dataProtector.sharing.addToCollection({
+      collectionId: collectionId,
+      protectedData: protectedData,
+      addOnlyAppWhitelist: '0x256bcd881c33bdf9df952f2a0148f27d439f2e64',
+    });
+
+    return addToCollectionResult;
+  };
+
 
   return {
     encryptAndPushData,

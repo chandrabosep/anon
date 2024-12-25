@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Input } from "../ui/input";
@@ -9,7 +10,8 @@ import { createOrganization } from "@/actions/organization.action";
 import { useiExec } from "@/hooks/iExec/useiExec";
 import { Plus } from "lucide-react";
 import { useAccount } from "wagmi";
-import { useRouter } from "next/navigation";
+
+// @ts-nocheck
 
 // @ts-nocheck
 
@@ -41,7 +43,7 @@ export function CreateOrganizationForm() {
         await createOrganization({
           name: title,
           walletAddress: address,
-          collectionId: res?.collection.collectionTokenId,
+          collectionId: res?.collection.collectionId,
         });
         return res;
       });

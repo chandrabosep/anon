@@ -7,19 +7,19 @@ import { ReputationChart } from "@/components/ReputationChart";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { useiExec } from "@/hooks/iExec/useiExec";
 import { ArrowUp, MessageSquarePlus, PlusCircle, ThumbsUp, Users } from "lucide-react";
 import { useAccount } from "wagmi";
-import { useiExec } from "@/hooks/iExec/useiExec";
-
+import AddQuery from "@/components/AddQuery";
 
 export default function MonochromeFeedbackUI() {
   const { isConnected, address } = useAccount();
   const [organization, setOrganization] = useState<any | null>(null);
   const [subscribedData, setSubscribedData] = useState<any | null>(null);
   const reputationScore = 2;
-  
+
   const { getSubscribedData } = useiExec();
- 
+
   const feedbackItems = [
     {
       id: 1,
@@ -89,10 +89,7 @@ export default function MonochromeFeedbackUI() {
         <Separator className="w-full bg-white/20 my-4" />
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-semibold">Voice of the People</h2>
-          <Button>
-            <PlusCircle className="size-5" />
-            Add Feedback
-          </Button>
+          <AddQuery />
         </div>
         {/* Feedback List */}
         <div className="max-h-[calc(100svh-9.5rem*2)] scrollbar-thin overflow-y-auto flex flex-col gap-6 pr-2">
