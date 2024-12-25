@@ -56,6 +56,8 @@ export default function MonochromeFeedbackUI() {
       }
     };
 
+    
+
     if (isConnected) {
       fetchData();
     }

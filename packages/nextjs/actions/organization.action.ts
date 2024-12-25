@@ -3,25 +3,45 @@
 import prisma from "../lib/db";
 
 export async function createOrganization(data: { name: string; walletAddress: string; collectionId: number }) {
-  if (!data.name || !data.walletAddress) {
+  if (!data.name || !data.walletAddress || !data.collectionId) {
     throw new Error("Invalid organization data.");
   }
 
   try {
+    // Check if the user exists
+    let user = await prisma.user.findUnique({
+      where: { walletAddress: data.walletAddress },
+    });
+
+    // If the user does not exist, create a new user
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          walletAddress: data.walletAddress,
+          collectionId: data.collectionId,
+        },
+      });
+    }
+
+    // Now create the organization and connect the user to it
     const organization = await prisma.organization.create({
       data: {
         name: data.name,
         walletAddress: data.walletAddress,
         collectionId: data.collectionId,
+        members: {
+          connect: { walletAddress: data.walletAddress }, // Connect the user to the organization
+        },
       },
     });
 
     return organization;
   } catch (error) {
     console.error("Error creating organization:", error);
-    throw new Error("Failed to create organization.");
+    throw new Error(`Failed to create organization. ${error instanceof Error ? error.message : error}`);
   }
 }
+
 
 export async function getOrganizations(address: string) {
   try {
@@ -35,7 +55,7 @@ export async function getOrganizations(address: string) {
         },
       },
       orderBy: {
-        createdAt: 'desc', // Order by creation date, descending
+        createdAt: "desc", // Order by creation date, descending
       },
     });
 
@@ -60,9 +80,9 @@ export async function getCollectionIdByWalletAddress(walletAddress: string) {
             members: true, // Include the members to get their count
           },
           orderBy: {
-            createdAt: 'desc', 
+            createdAt: "desc",
           },
-          take: 1, 
+          take: 1,
         },
       },
     });

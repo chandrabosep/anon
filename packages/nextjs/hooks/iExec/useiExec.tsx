@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 //@ts-nocheck
 "use client";
 
@@ -438,7 +439,7 @@ export const useiExec = () => {
 
   const setProtectedDataToSubscription = async (title: string, content: string, collectionId: number) => {
     const { data: session, error: sessionError } = await checkSession();
-
+  
     if (sessionError?.value || !session) {
       return {
         data: null,
@@ -448,7 +449,7 @@ export const useiExec = () => {
         },
       };
     }
-
+  
     try {
       // Protect the data using dataProtector
       const protectedData = await dataProtector.core.protectData({
@@ -458,31 +459,47 @@ export const useiExec = () => {
           content: content,
         },
       });
-
+  
       if (!protectedData?.address) {
         throw new Error("Failed to protect data.");
       }
-
+  
+      // Grant access to the protected data
+      const grantAccessResult = await dataProtector.core.grantAccess({
+        protectedData: protectedData.address,
+        authorizedApp: IEXEC_APP,
+        authorizedUser: `0x0000000000000000000000000000000000000000`,
+        pricePerAccess: 0,
+        numberOfAccess: 100000000000,
+      });
+  
+      // Log the result after it is initialized
+      console.log("grantAccessResult", grantAccessResult);
+  
+      if (!grantAccessResult) {
+        throw new Error("Failed to grant access to the protected data.");
+      }
+  
       // Add the protected data to the collection
       const addToCollectionResult = await dataProtector.sharing.addToCollection({
         collectionId: collectionId,
         protectedData: protectedData.address,
-        addOnlyAppWhitelist: "0x256bcd881c33bdf9df952f2a0148f27d439f2e64",
+        addOnlyAppWhitelist: IEXEC_APP,
       });
-
+  
       if (!addToCollectionResult) {
         throw new Error("Failed to add data to collection.");
       }
-
+  
       // Set the protected data to the subscription
       const setProtectedDataToSub = await dataProtector.sharing.setProtectedDataToSubscription({
         protectedData: protectedData.address,
       });
-
+  
       if (!setProtectedDataToSub) {
         throw new Error("Failed to set protected data to subscription.");
       }
-
+  
       console.log("Protected data successfully processed:", setProtectedDataToSub);
       return { setProtectedDataToSub, protectedData: protectedData?.address };
     } catch (error) {
@@ -490,12 +507,13 @@ export const useiExec = () => {
       return {
         data: null,
         error: {
-          message: error || "An error occurred while protecting data.",
+          message: error instanceof Error ? error.message : "An error occurred while protecting data.",
           value: true,
         },
       };
     }
   };
+  
 
   const getProtectedData = async (collectionId: number) => {
     const { data: session, error: sessionError } = await checkSession();
@@ -532,7 +550,7 @@ export const useiExec = () => {
             // Consume the protected data
             const consumedData = await dataProtector.sharing.consumeProtectedData({
               protectedData: item?.address,
-              app: '0x256bcd881c33bdf9df952f2a0148f27d439f2e64',
+              app: IEXEC_APP,
             });
             return consumedData;
           } catch (consumeError) {

@@ -37,7 +37,7 @@ export function CreateOrganizationForm() {
         await createOrganization({
           name: title,
           walletAddress: address,
-          // @ts-ignore 
+          // @ts-ignore
           collectionId: res?.collection.collectionId,
         });
         return res;
