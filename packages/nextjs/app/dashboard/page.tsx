@@ -14,10 +14,12 @@ function Dashboard() {
   const [organizations, setOrganizations] = useState<any[]>([]);
   const [queries, setQueries] = useState<any[]>([]);
 
+  const RecentOrgcollectionId = organizations[0]?.collectionId
+
   useEffect(() => {
     const fetchOrganizations = async () => {
       const organizations = await getOrganizations(address as string);
-      setOrganizations(organizations.reverse());
+      setOrganizations(organizations);
     };
     fetchOrganizations();
 
@@ -61,7 +63,7 @@ function Dashboard() {
             <h2 className="text-2xl font-semibold  mb-4">Verification Requests</h2>
             <div className="grid gap-4">
               {queries.map(query => (
-                <VerificationRequestCard key={query.id} request={query} />
+                <VerificationRequestCard key={query.id} request={query} collectionId={RecentOrgcollectionId} />
               ))}
               {queries.length === 0 && <p className="text-gray-500 text-center py-8">No queries yet!</p>}
             </div>

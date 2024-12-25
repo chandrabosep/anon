@@ -26,6 +26,9 @@ export async function createOrganization(data: { name: string; walletAddress: st
 export async function getOrganizations(address: string) {
   const organization = await prisma.organization.findMany({
     where: { walletAddress: address },
+    orderBy: {
+      createdAt: 'desc',
+    },
   });
   return organization;
 }

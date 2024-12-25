@@ -9,6 +9,10 @@ import { useSwitchChain } from "wagmi";
 
 /* eslint-disable react-hooks/rules-of-hooks */
 
+/* eslint-disable react-hooks/rules-of-hooks */
+
+/* eslint-disable react-hooks/rules-of-hooks */
+
 const dataProtector = new IExecDataProtector(window.ethereum);
 
 export const useiExec = () => {
@@ -459,6 +463,67 @@ export const useiExec = () => {
     return addToCollectionResult;
   };
 
+  const setProtectedDataToSubscription = async (title: string, content: string, collectionId: number) => {
+    const { data: session, error: sessionError } = await checkSession();
+
+    if (sessionError?.value || !session) {
+      return {
+        data: null,
+        error: {
+          message: "Error creating file or checking session",
+          value: true,
+        },
+      };
+    }
+
+    try {
+      // Protect the data using dataProtector
+      const protectedData = await dataProtector.core.protectData({
+        name: title,
+        data: {
+          title: title,
+          content: content,
+        },
+      });
+
+      if (!protectedData?.address) {
+        throw new Error("Failed to protect data.");
+      }
+
+      // Add the protected data to the collection
+      const addToCollectionResult = await dataProtector.sharing.addToCollection({
+        collectionId: collectionId,
+        protectedData: protectedData.address,
+        addOnlyAppWhitelist: "0x256bcd881c33bdf9df952f2a0148f27d439f2e64",
+      });
+
+      if (!addToCollectionResult) {
+        throw new Error("Failed to add data to collection.");
+      }
+
+      // Set the protected data to the subscription
+      const setProtectedDataToSub = await dataProtector.sharing.setProtectedDataToSubscription({
+        protectedData: protectedData.address,
+      });
+
+      if (!setProtectedDataToSub) {
+        throw new Error("Failed to set protected data to subscription.");
+      }
+
+      console.log("Protected data successfully processed:", setProtectedDataToSub);
+      return { setProtectedDataToSub, protectedData: protectedData?.address };
+    } catch (error) {
+      console.error("Error during data protection flow:", error);
+      return {
+        data: null,
+        error: {
+          message: error || "An error occurred while protecting data.",
+          value: true,
+        },
+      };
+    }
+  };
+
   return {
     encryptAndPushData,
     getMyProtectedData,
@@ -469,5 +534,6 @@ export const useiExec = () => {
     addDataToCollection,
     createCollectionAndSubscribe,
     getSubscribedData,
+    setProtectedDataToSubscription,
   };
 };

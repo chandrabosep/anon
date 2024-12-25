@@ -60,3 +60,4 @@ export async function acceptQuery(queryId: number) {
         data: { status: 'APPROVED' },
     });
 }
+

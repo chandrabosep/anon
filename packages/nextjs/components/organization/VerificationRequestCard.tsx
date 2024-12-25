@@ -1,23 +1,38 @@
 'use client'
 
-import React from "react"
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Check } from 'lucide-react'
-import { acceptQuery } from "@/actions/queries.action"
+import React, { useState } from "react";
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Check, Loader } from "lucide-react";
+import { useiExec } from "@/hooks/iExec/useiExec";
+import { acceptQuery } from "@/actions/queries.action";
 
 interface VerificationRequest {
-  id: string
-  title: string
-  content: string
-  createdAt: string
+  id: string;
+  title: string;
+  content: string;
+  createdAt: string;
 }
 
-export function VerificationRequestCard({ request }: { request: VerificationRequest }) {
+export function VerificationRequestCard({ request, collectionId }: { request: VerificationRequest, collectionId: number }) {
+  const { setProtectedDataToSubscription } = useiExec();
+  const [isLoading, setIsLoading] = useState(false);
+
   const onAccept = async () => {
-    console.log("Accepting request")
-    await acceptQuery(request?.id)
-  }
+    try {
+      setIsLoading(true);
+      console.log("Accepting request");
+      const protectedData = await setProtectedDataToSubscription(request.title, request.content, collectionId);
+      if (protectedData) {
+        await acceptQuery(Number(request?.id));
+      }
+      console.log("Request accepted:", protectedData);
+    } catch (error) {
+      console.error("Error accepting request:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Card className="bg-white/5 border-white/20">
@@ -31,17 +46,23 @@ export function VerificationRequestCard({ request }: { request: VerificationRequ
         <span className="text-sm text-gray-400">
           Submitted {new Date(request.createdAt).toLocaleDateString()}
         </span>
-        <Button 
+        <Button
           size="sm"
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium"
+          disabled={isLoading}
+          className={`flex items-center gap-2 ${
+            isLoading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
+          } text-white font-medium`}
           onClick={onAccept}
           title="Accept Request"
         >
-          <Check className="w-4 h-4" />
-          Accept
+          {isLoading ? (
+            <Loader className="w-4 h-4 animate-spin" />
+          ) : (
+            <Check className="w-4 h-4" />
+          )}
+          {isLoading ? "Processing..." : "Accept"}
         </Button>
       </CardFooter>
     </Card>
-  )
+  );
 }
-
