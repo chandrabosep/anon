@@ -18,27 +18,25 @@ model User {
   walletAddress String         @unique
   createdAt     DateTime       @default(now())
   organizations Organization[] @relation("UserOrganizations")
-  queries       Query[]
 }
 
 model Organization {
-  id             Int         @id @default(autoincrement())
-  name           String
-  walletAddress  String 
-  createdAt      DateTime    @default(now())
-  collectionId   Int
-  members        User[]      @relation("UserOrganizations")
-  queries        Query[]
+  id            Int      @id @default(autoincrement())
+  name          String
+  walletAddress String
+  createdAt     DateTime @default(now())
+  collectionId  Int      @unique
+  members       User[]   @relation("UserOrganizations")
+  queries       Query[]
 }
 
 model Query {
   id             Int          @id @default(autoincrement())
   title          String
-  description    String
-  status         String // e.g., pending, resolved, etc.
+  content        String
   createdAt      DateTime     @default(now())
-  userId         Int
   organizationId Int
-  user           User         @relation(fields: [userId], references: [id])
   organization   Organization @relation(fields: [organizationId], references: [id])
+
+  @@index([organizationId])
 }

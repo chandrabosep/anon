@@ -7,6 +7,8 @@ import JSZip from "jszip";
 import { toast } from "sonner";
 import { useSwitchChain } from "wagmi";
 
+/* eslint-disable react-hooks/rules-of-hooks */
+
 const dataProtector = new IExecDataProtector(window.ethereum);
 
 export const useiExec = () => {
@@ -404,10 +406,9 @@ export const useiExec = () => {
     return subscribeToCollectionResult;
   };
 
-
   const createCollectionAndSubscribe = async () => {
     const collection = await createCollection().then(async res => {
-      console.log("res", res);  
+      console.log("res", res);
       const subscribeToCollectionResult = await subscribeToCollection(res?.collectionId as number);
       return { collection: res, subscribeToCollectionResult };
     });
@@ -429,7 +430,7 @@ export const useiExec = () => {
       };
     }
     console.log("collectionId222", collectionId);
-    const subscribedData = await dataProtector.sharing.getCollectionSubscriptions({
+    const subscribedData = await dataProtector.sharing.getProtectedDataInCollections({
       collectionId: collectionId,
     });
     console.log("subscribedData", subscribedData);
@@ -452,12 +453,11 @@ export const useiExec = () => {
     const addToCollectionResult = await dataProtector.sharing.addToCollection({
       collectionId: collectionId,
       protectedData: protectedData,
-      addOnlyAppWhitelist: '0x256bcd881c33bdf9df952f2a0148f27d439f2e64',
+      addOnlyAppWhitelist: "0x256bcd881c33bdf9df952f2a0148f27d439f2e64",
     });
 
     return addToCollectionResult;
   };
-
 
   return {
     encryptAndPushData,

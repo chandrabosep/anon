@@ -1,5 +1,8 @@
+"use client";
+
 import React, { useState } from "react";
 import { Button } from "./ui/button";
+import { createQuery } from "@/actions/queries.action";
 import {
   Dialog,
   DialogContent,
@@ -10,17 +13,14 @@ import {
 } from "@/components/ui/dialog";
 import { PlusCircle } from "lucide-react";
 
-export default function AddQuery() {
+export default function AddQuery({ collectionId }: { collectionId: number }) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [open, setOpen] = useState(false); // Track if the dialog is open
+  const [open, setOpen] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Logic for submitting the query (e.g., make an API call)
-    console.log("Query Submitted:", { title, content });
-
-    // Reset form and close dialog
+    await createQuery({ title, content, collectionId });
     setTitle("");
     setContent("");
     setOpen(false);
