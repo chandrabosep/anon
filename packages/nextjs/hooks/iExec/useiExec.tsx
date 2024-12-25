@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/rules-of-hooks */
+//@ts-nocheck
 "use client";
 
 import { BELLECOUR_CHAIN_ID, IEXEC_APP, createArrayBufferFromFile } from "@/utils/iExec/utils";
@@ -6,12 +6,6 @@ import { IExecDataProtector, ProtectedData } from "@iexec/dataprotector";
 import JSZip from "jszip";
 import { toast } from "sonner";
 import { useSwitchChain } from "wagmi";
-
-/* eslint-disable react-hooks/rules-of-hooks */
-
-/* eslint-disable react-hooks/rules-of-hooks */
-
-/* eslint-disable react-hooks/rules-of-hooks */
 
 const dataProtector = new IExecDataProtector(window.ethereum);
 
@@ -526,20 +520,27 @@ export const useiExec = () => {
         throw new Error("No protected data found in the collection.");
       }
   
-      // Process each protected data item
+      console.log("Protected Data in Collection:", protectedDataResult.protectedDataInCollection);
+  
       const resolvedData = await Promise.all(
         protectedDataResult.protectedDataInCollection.map(async (item) => {
           if (!item?.address) {
             throw new Error("Invalid protected data address.");
           }
   
-          // Consume the protected data
-          const consumedData = await dataProtector.sharing.consumeProtectedData({
-            protectedData: item.address,
-            app: IEXEC_APP,
-          });
-  
-          return consumedData;
+          try {
+            // Consume the protected data
+            const consumedData = await dataProtector.sharing.consumeProtectedData({
+              protectedData: item?.address,
+              app: '0x256bcd881c33bdf9df952f2a0148f27d439f2e64',
+            });
+            return consumedData;
+          } catch (consumeError) {
+            console.error(`Error consuming protected data for address ${item.address}:`, consumeError);
+            return {
+              error: `Failed to consume protected data for address ${item.address}`,
+            };
+          }
         })
       );
   
@@ -553,13 +554,37 @@ export const useiExec = () => {
       return {
         data: null,
         error: {
-          message: error || "An error occurred while retrieving protected data.",
+          message: error.message || "An error occurred while retrieving protected data.",
           value: true,
         },
       };
     }
   };
   
+
+  const subscribeToOrganization = async (collectionId: number) => {
+    const { data: session, error: sessionError } = await checkSession();
+
+    if (sessionError?.value || !session) {
+      return {
+        data: null,
+        error: {
+          message: "Error checking session",
+          value: true,
+        },
+      };
+    }
+
+    const subscribeToCollectionResult = await dataProtector.sharing.subscribeToCollection({
+      collectionId: collectionId,
+      price: 0,
+      duration: 1000000000000,
+    });
+
+    console.log("subscribeToCollectionResult", subscribeToCollectionResult);
+
+    return subscribeToCollectionResult;
+  };
 
   return {
     encryptAndPushData,
@@ -572,5 +597,6 @@ export const useiExec = () => {
     getSubscribedData,
     setProtectedDataToSubscription,
     getProtectedData,
+    subscribeToOrganization,
   };
 };

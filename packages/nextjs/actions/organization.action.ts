@@ -35,25 +35,31 @@ export async function getOrganizations(address: string) {
 
 export async function getCollectionIdByWalletAddress(walletAddress: string) {
   try {
-    const organization = await prisma.organization.findFirst({
+    const user = await prisma.user.findUnique({
       where: {
         walletAddress: walletAddress,
       },
-      select: {
-        name: true,
-        collectionId: true,
-      },
-      orderBy: {
-        createdAt: 'desc',
+      include: {
+        organizations: {
+          select: {
+            name: true,
+            collectionId: true,
+          },
+          orderBy: {
+            createdAt: 'desc', 
+          },
+          take: 1, 
+        },
       },
     });
 
-    if (!organization) {
-      throw new Error("Organization not found for this wallet address.");
+    if (!user || user.organizations.length === 0) {
+      throw new Error("No organizations found for this user.");
     }
 
-    return organization;
+    return user.organizations[0];
   } catch (error) {
-    throw new Error(`Error fetching collectionId: ${error}`);
+    console.error("Error finding user by wallet address:", error);
+    throw new Error(`Error fetching user: ${error}`);
   }
 }

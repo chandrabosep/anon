@@ -40,6 +40,7 @@ export default function MonochromeFeedbackUI() {
         try {
           // Fetch the organization based on wallet address
           const fetchedOrganization = await getCollectionIdByWalletAddress(address);
+          console.log("fetchedOrganization", fetchedOrganization);
           setOrganization(fetchedOrganization);
           setCollectionId(fetchedOrganization?.collectionId);
           // Fetch the subscribed data once the organization is fetched

@@ -16,6 +16,7 @@ datasource db {
 model User {
   id            Int            @id @default(autoincrement())
   walletAddress String         @unique
+  collectionId  Int?
   createdAt     DateTime       @default(now())
   organizations Organization[] @relation("UserOrganizations")
 }
