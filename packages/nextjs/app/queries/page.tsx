@@ -21,7 +21,7 @@ export default function MonochromeFeedbackUI() {
 
   const { setCollectionId } = useGlobalState();
 
-  const { getSubscribedData } = useiExec();
+  const { getProtectedData } = useiExec();
 
   const feedbackItems = [
     {
@@ -44,7 +44,9 @@ export default function MonochromeFeedbackUI() {
           setCollectionId(fetchedOrganization?.collectionId);
           // Fetch the subscribed data once the organization is fetched
           if (fetchedOrganization?.collectionId) {
-            const data = await getSubscribedData(fetchedOrganization.collectionId);
+            // const data = await getSubscribedData(fetchedOrganization.collectionId);
+            const data = await getProtectedData(fetchedOrganization.collectionId);
+
             setSubscribedData(data);
           }
         } catch (error) {
