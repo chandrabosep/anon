@@ -459,9 +459,23 @@ export const useiExec = () => {
           content: content,
         },
       });
+
+      console.log("protectedData", protectedData);
   
       if (!protectedData?.address) {
         throw new Error("Failed to protect data.");
+      }
+      // Add the protected data to the collection
+      const addToCollectionResult = await dataProtector.sharing.addToCollection({
+        protectedData: protectedData.address,
+        collectionId: collectionId,
+        addOnlyAppWhitelist: IEXEC_APP,
+      });
+
+      console.log("addToCollectionResult", addToCollectionResult);
+  
+      if (!addToCollectionResult) {
+        throw new Error("Failed to add data to collection.");
       }
   
       // Grant access to the protected data
@@ -480,16 +494,6 @@ export const useiExec = () => {
         throw new Error("Failed to grant access to the protected data.");
       }
   
-      // Add the protected data to the collection
-      const addToCollectionResult = await dataProtector.sharing.addToCollection({
-        collectionId: collectionId,
-        protectedData: protectedData.address,
-        addOnlyAppWhitelist: IEXEC_APP,
-      });
-  
-      if (!addToCollectionResult) {
-        throw new Error("Failed to add data to collection.");
-      }
   
       // Set the protected data to the subscription
       const setProtectedDataToSub = await dataProtector.sharing.setProtectedDataToSubscription({

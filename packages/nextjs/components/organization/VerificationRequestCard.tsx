@@ -1,11 +1,11 @@
-'use client'
+"use client";
 
 import React, { useState } from "react";
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Check, Loader } from "lucide-react";
-import { useiExec } from "@/hooks/iExec/useiExec";
 import { acceptQuery } from "@/actions/queries.action";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { useiExec } from "@/hooks/iExec/useiExec";
+import { Check, Loader } from "lucide-react";
 
 interface VerificationRequest {
   id: string;
@@ -14,7 +14,13 @@ interface VerificationRequest {
   createdAt: string;
 }
 
-export function VerificationRequestCard({ request, collectionId }: { request: VerificationRequest, collectionId: number }) {
+export function VerificationRequestCard({
+  request,
+  collectionId,
+}: {
+  request: VerificationRequest;
+  collectionId: number;
+}) {
   const { setProtectedDataToSubscription } = useiExec();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -22,10 +28,13 @@ export function VerificationRequestCard({ request, collectionId }: { request: Ve
     try {
       setIsLoading(true);
       console.log("Accepting request");
-      const protectedData = await setProtectedDataToSubscription(request.title, request.content, collectionId);
-      if (protectedData) {
-        await acceptQuery(Number(request?.id));
-      }
+      const protectedData = await setProtectedDataToSubscription(request.title, request.content, collectionId).then(
+        async res => {
+          if (res?.data) {
+            await acceptQuery(Number(request?.id));
+          }
+        },
+      );
       console.log("Request accepted:", protectedData);
     } catch (error) {
       console.error("Error accepting request:", error);
@@ -43,9 +52,7 @@ export function VerificationRequestCard({ request, collectionId }: { request: Ve
         <p className="text-gray-400 line-clamp-3">{request.content}</p>
       </CardContent>
       <CardFooter className="flex items-center justify-between">
-        <span className="text-sm text-gray-400">
-          Submitted {new Date(request.createdAt).toLocaleDateString()}
-        </span>
+        <span className="text-sm text-gray-400">Submitted {new Date(request.createdAt).toLocaleDateString()}</span>
         <Button
           size="sm"
           disabled={isLoading}
@@ -55,11 +62,7 @@ export function VerificationRequestCard({ request, collectionId }: { request: Ve
           onClick={onAccept}
           title="Accept Request"
         >
-          {isLoading ? (
-            <Loader className="w-4 h-4 animate-spin" />
-          ) : (
-            <Check className="w-4 h-4" />
-          )}
+          {isLoading ? <Loader className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
           {isLoading ? "Processing..." : "Accept"}
         </Button>
       </CardFooter>
