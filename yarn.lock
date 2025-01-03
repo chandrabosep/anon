@@ -1328,6 +1328,7 @@
     next "~14.2.11"
     next-nprogress-bar "~2.3.13"
     next-themes "~0.3.0"
+    pino-pretty "^13.0.0"
     prisma "^6.1.0"
     qrcode.react "~4.0.1"
     react "~18.3.1"
@@ -4650,6 +4651,11 @@ human-signals@^4.3.0:
 
 human-signals@^5.0.0:
   version "5.0.0"
+
+husky@^9.1.7:
+  version "9.1.7"
+  resolved "https://registry.npmjs.org/husky/-/husky-9.1.7.tgz"
+  integrity sha512-5gs5ytaNjBrh5Ow3zrvdUUY+0VxIuWVL4i9irt6friV+BqdCfmV11CQTWMiBYWHbXhco+J1kHfTOUkePhCDvMA==
 
 husky@~8.0.3:
   version "8.0.3"
