@@ -2,7 +2,11 @@
 //@ts-nocheck
 "use client";
 
-import { BELLECOUR_CHAIN_ID, IEXEC_APP, createArrayBufferFromFile } from "@/utils/iExec/utils";
+import {
+  BELLECOUR_CHAIN_ID,
+  IEXEC_APP,
+  createArrayBufferFromFile,
+} from "@/utils/iExec/utils";
 import { IExecDataProtector, ProtectedData } from "@iexec/dataprotector";
 import JSZip from "jszip";
 import { toast } from "sonner";
@@ -46,22 +50,22 @@ export const useiExec = () => {
     }
   };
 
-  const createFile = async (data: string, dataName: string) => {
-    if (!data || !dataName) {
-      return {
-        data: null,
-        error: {
-          message: "Missing data or data name",
-          value: true,
-        },
-      };
-    }
+  // const createFile = async (data: string, dataName: string) => {
+  //   if (!data || !dataName) {
+  //     return {
+  //       data: null,
+  //       error: {
+  //         message: "Missing data or data name",
+  //         value: true,
+  //       },
+  //     };
+  //   }
 
-    const blob = new Blob([data], { type: "text/plain" });
-    const file = new File([blob], dataName, { type: "text/plain" });
+  //   const blob = new Blob([data], { type: "text/plain" });
+  //   const file = new File([blob], dataName, { type: "text/plain" });
 
-    return { data: file, error: null };
-  };
+  //   return { data: file, error: null };
+  // };
 
   const checkCorrectChain = async () => {
     try {
@@ -113,7 +117,8 @@ export const useiExec = () => {
   };
 
   const checkSession = async () => {
-    const { data: ethProvider, error: ethProviderError } = await checkETHProvider();
+    const { data: ethProvider, error: ethProviderError } =
+      await checkETHProvider();
     const { data: userAddress, error } = await checkUserAddress();
     const { data: chainId, error: chainIdError } = await checkCorrectChain();
 
@@ -147,223 +152,223 @@ export const useiExec = () => {
     }
   };
 
-  const encryptAndPushData = async (dataString: string, dataName: string) => {
-    try {
-      const { data: file, error: fileError } = await createFile(dataString, dataName);
-      const { data: session, error: sessionError } = await checkSession();
+  // const encryptAndPushData = async (dataString: string, dataName: string) => {
+  //   try {
+  //     const { data: file, error: fileError } = await createFile(dataString, dataName);
+  //     const { data: session, error: sessionError } = await checkSession();
 
-      if (sessionError?.value || fileError?.value || !session) {
-        return {
-          data: null,
-          error: {
-            message: "Error creating file or checking session",
-            value: true,
-          },
-        };
-      }
+  //     if (sessionError?.value || fileError?.value || !session) {
+  //       return {
+  //         data: null,
+  //         error: {
+  //           message: "Error creating file or checking session",
+  //           value: true,
+  //         },
+  //       };
+  //     }
 
-      if (!file) {
-        return {
-          data: null,
-          error: {
-            message: "No file to encrypt and push",
-            value: true,
-          },
-        };
-      }
+  //     if (!file) {
+  //       return {
+  //         data: null,
+  //         error: {
+  //           message: "No file to encrypt and push",
+  //           value: true,
+  //         },
+  //       };
+  //     }
 
-      if (file.size > 500000) {
-        toast("File size is too large. Please upload a file smaller than 500KB.");
-        return {
-          data: null,
-          error: {
-            message: "File size is too large. Please upload a file smaller than 500KB.",
-            value: true,
-          },
-        };
-      }
+  //     if (file.size > 500000) {
+  //       toast("File size is too large. Please upload a file smaller than 500KB.");
+  //       return {
+  //         data: null,
+  //         error: {
+  //           message: "File size is too large. Please upload a file smaller than 500KB.",
+  //           value: true,
+  //         },
+  //       };
+  //     }
 
-      const bufferFile = await createArrayBufferFromFile(file);
+  //     const bufferFile = await createArrayBufferFromFile(file);
 
-      const protectedData = await dataProtector.core.protectData({
-        name: file.name,
-        data: {
-          file: bufferFile,
-        },
-      });
+  //     const protectedData = await dataProtector.core.protectData({
+  //       name: file.name,
+  //       data: {
+  //         file: bufferFile,
+  //       },
+  //     });
 
-      const { data, error } = await grantAccess(protectedData.address, session.userAddress);
+  //     const { data, error } = await grantAccess(protectedData.address, session.userAddress);
 
-      return {
-        data: protectedData,
-        error: null,
-      };
-    } catch (error) {
-      return {
-        data: null,
-        error: {
-          message: "Error encrypting and pushing data",
-          value: true,
-        },
-      };
-    }
-  };
+  //     return {
+  //       data: protectedData,
+  //       error: null,
+  //     };
+  //   } catch (error) {
+  //     return {
+  //       data: null,
+  //       error: {
+  //         message: "Error encrypting and pushing data",
+  //         value: true,
+  //       },
+  //     };
+  //   }
+  // };
 
-  const getMyProtectedData = async () => {
-    try {
-      const { data: session, error: sessionError } = await checkSession();
+  // const getMyProtectedData = async () => {
+  //   try {
+  //     const { data: session, error: sessionError } = await checkSession();
 
-      if (sessionError?.value || !session) {
-        return {
-          data: null,
-          error: {
-            message: "Error creating file or checking session",
-            value: true,
-          },
-        };
-      }
+  //     if (sessionError?.value || !session) {
+  //       return {
+  //         data: null,
+  //         error: {
+  //           message: "Error creating file or checking session",
+  //           value: true,
+  //         },
+  //       };
+  //     }
 
-      const protectedDataList = await dataProtector.core.getProtectedData({
-        owner: session.userAddress,
-      });
+  //     const protectedDataList = await dataProtector.core.getProtectedData({
+  //       owner: session.userAddress,
+  //     });
 
-      if (!protectedDataList) {
-        return {
-          data: [] as ProtectedData[],
-          error: {
-            message: "No protected data found",
-            value: true,
-          },
-        };
-      } else {
-        return {
-          data: protectedDataList,
-          error: null,
-        };
-      }
-    } catch (error) {
-      return {
-        data: null,
-        error: {
-          message: "Error fetching protected data",
-          value: true,
-        },
-      };
-    }
-  };
+  //     if (!protectedDataList) {
+  //       return {
+  //         data: [] as ProtectedData[],
+  //         error: {
+  //           message: "No protected data found",
+  //           value: true,
+  //         },
+  //       };
+  //     } else {
+  //       return {
+  //         data: protectedDataList,
+  //         error: null,
+  //       };
+  //     }
+  //   } catch (error) {
+  //     return {
+  //       data: null,
+  //       error: {
+  //         message: "Error fetching protected data",
+  //         value: true,
+  //       },
+  //     };
+  //   }
+  // };
 
-  const grantAccess = async (_protectedData: string, _authorizedUser: string) => {
-    try {
-      const { data: session, error: sessionError } = await checkSession();
+  // const grantAccess = async (_protectedData: string, _authorizedUser: string) => {
+  //   try {
+  //     const { data: session, error: sessionError } = await checkSession();
 
-      if (sessionError?.value || !session) {
-        return {
-          data: null,
-          error: {
-            message: "Error creating file or checking session",
-            value: true,
-          },
-        };
-      }
+  //     if (sessionError?.value || !session) {
+  //       return {
+  //         data: null,
+  //         error: {
+  //           message: "Error creating file or checking session",
+  //           value: true,
+  //         },
+  //       };
+  //     }
 
-      const grantedAccess = await dataProtector.core.grantAccess({
-        protectedData: _protectedData,
-        authorizedApp: IEXEC_APP,
-        authorizedUser: _authorizedUser,
-        pricePerAccess: 0,
-        numberOfAccess: 100000000000,
-      });
+  //     const grantedAccess = await dataProtector.core.grantAccess({
+  //       protectedData: _protectedData,
+  //       authorizedApp: IEXEC_APP,
+  //       authorizedUser: _authorizedUser,
+  //       pricePerAccess: 0,
+  //       numberOfAccess: 100000000000,
+  //     });
 
-      return {
-        data: grantedAccess,
-        error: null,
-      };
-    } catch (error) {
-      return {
-        data: null,
-        error: {
-          message: `Error granting access to ${_authorizedUser} to access ${_protectedData}`,
-          value: true,
-        },
-      };
-    }
-  };
+  //     return {
+  //       data: grantedAccess,
+  //       error: null,
+  //     };
+  //   } catch (error) {
+  //     return {
+  //       data: null,
+  //       error: {
+  //         message: `Error granting access to ${_authorizedUser} to access ${_protectedData}`,
+  //         value: true,
+  //       },
+  //     };
+  //   }
+  // };
 
-  const decompressArrayBuffer = async (input: ArrayBuffer, fileName: string): Promise<Uint8Array> => {
-    try {
-      const zip = await JSZip.loadAsync(input);
-      const file = zip.file(fileName);
+  // const decompressArrayBuffer = async (input: ArrayBuffer, fileName: string): Promise<Uint8Array> => {
+  //   try {
+  //     const zip = await JSZip.loadAsync(input);
+  //     const file = zip.file(fileName);
 
-      if (!file) {
-        throw new Error(`File "${fileName}" not found in the ZIP archive.`);
-      }
+  //     if (!file) {
+  //       throw new Error(`File "${fileName}" not found in the ZIP archive.`);
+  //     }
 
-      const content = await file.async("uint8array");
-      return content;
-    } catch (error) {
-      throw new Error("Error decompressing ZIP archive");
-    }
-  };
+  //     const content = await file.async("uint8array");
+  //     return content;
+  //   } catch (error) {
+  //     throw new Error("Error decompressing ZIP archive");
+  //   }
+  // };
 
-  const decryptData = async (_protectedData: string) => {
-    try {
-      const { data: session, error: sessionError } = await checkSession();
+  // const decryptData = async (_protectedData: string) => {
+  //   try {
+  //     const { data: session, error: sessionError } = await checkSession();
 
-      if (sessionError?.value || !session) {
-        return {
-          data: null,
-          error: {
-            message: "Error creating file or checking session",
-            value: true,
-          },
-        };
-      }
+  //     if (sessionError?.value || !session) {
+  //       return {
+  //         data: null,
+  //         error: {
+  //           message: "Error creating file or checking session",
+  //           value: true,
+  //         },
+  //       };
+  //     }
 
-      const processProtectedDataResponse = await dataProtector.core.processProtectedData({
-        protectedData: _protectedData,
-        app: IEXEC_APP,
-        maxPrice: 0,
-      });
+  //     const processProtectedDataResponse = await dataProtector.core.processProtectedData({
+  //       protectedData: _protectedData,
+  //       app: IEXEC_APP,
+  //       maxPrice: 0,
+  //     });
 
-      console.log("processProtectedDataResponse", processProtectedDataResponse);
+  //     console.log("processProtectedDataResponse", processProtectedDataResponse);
 
-      const file = await decompressArrayBuffer(processProtectedDataResponse.result, "content");
+  //     const file = await decompressArrayBuffer(processProtectedDataResponse.result, "content");
 
-      return {
-        data: file,
-        error: null,
-      };
-    } catch (error) {
-      return {
-        data: null,
-        error: {
-          message: "Error decrypting data",
-          value: true,
-        },
-      };
-    }
-  };
+  //     return {
+  //       data: file,
+  //       error: null,
+  //     };
+  //   } catch (error) {
+  //     return {
+  //       data: null,
+  //       error: {
+  //         message: "Error decrypting data",
+  //         value: true,
+  //       },
+  //     };
+  //   }
+  // };
 
-  const consumeData = async (_protectedData: string) => {
-    const { data: session, error: sessionError } = await checkSession();
+  // const consumeData = async (_protectedData: string) => {
+  //   const { data: session, error: sessionError } = await checkSession();
 
-    if (sessionError?.value || !session) {
-      return {
-        data: null,
-        error: {
-          message: "Error creating file or checking session",
-          value: true,
-        },
-      };
-    }
+  //   if (sessionError?.value || !session) {
+  //     return {
+  //       data: null,
+  //       error: {
+  //         message: "Error creating file or checking session",
+  //         value: true,
+  //       },
+  //     };
+  //   }
 
-    const consumeProtectedDataResult = await dataProtector.core.consumeProtectedData({
-      protectedData: _protectedData,
-      app: IEXEC_APP,
-    });
+  //   const consumeProtectedDataResult = await dataProtector.core.consumeProtectedData({
+  //     protectedData: _protectedData,
+  //     app: IEXEC_APP,
+  //   });
 
-    return { data: consumeProtectedDataResult.result };
-  };
+  //   return { data: consumeProtectedDataResult.result };
+  // };
 
   const createCollection = async () => {
     const { data: session, error: sessionError } = await checkSession();
@@ -378,7 +383,8 @@ export const useiExec = () => {
       };
     }
 
-    const createCollectionResult = await dataProtector.sharing.createCollection();
+    const createCollectionResult =
+      await dataProtector.sharing.createCollection();
 
     return createCollectionResult;
   };
@@ -396,20 +402,23 @@ export const useiExec = () => {
       };
     }
 
-    const subscribeToCollectionResult = await dataProtector.sharing.setSubscriptionParams({
-      collectionId: collectionId,
-      price: 0,
-      duration: 1000000000000,
-    });
+    const subscribeToCollectionResult =
+      await dataProtector.sharing.setSubscriptionParams({
+        collectionId: collectionId,
+        price: 0,
+        duration: 1000000000000,
+      });
 
     return subscribeToCollectionResult;
   };
 
   const createCollectionAndSubscribe = async () => {
-    const collection = await createCollection().then(async res => {
+    const collection = await createCollection().then(async (res) => {
       console.log("res", res);
       // @ts-ignore
-      const subscribeToCollectionResult = await subscribeToCollection(res?.collectionId as number);
+      const subscribeToCollectionResult = await subscribeToCollection(
+        res?.collectionId as number
+      );
       return { collection: res, subscribeToCollectionResult };
     });
     console.log(collection);
@@ -430,16 +439,21 @@ export const useiExec = () => {
       };
     }
     console.log("collectionId222", collectionId);
-    const subscribedData = await dataProtector.sharing.getProtectedDataInCollections({
-      collectionId: collectionId,
-    });
+    const subscribedData =
+      await dataProtector.sharing.getProtectedDataInCollections({
+        collectionId: collectionId,
+      });
     console.log("subscribedData", subscribedData);
     return subscribedData;
   };
 
-  const setProtectedDataToSubscription = async (title: string, content: string, collectionId: number) => {
+  const setProtectedDataToSubscription = async (
+    title: string,
+    content: string,
+    collectionId: number
+  ) => {
     const { data: session, error: sessionError } = await checkSession();
-  
+
     if (sessionError?.value || !session) {
       return {
         data: null,
@@ -449,7 +463,7 @@ export const useiExec = () => {
         },
       };
     }
-  
+
     try {
       // Protect the data using dataProtector
       const protectedData = await dataProtector.core.protectData({
@@ -461,23 +475,25 @@ export const useiExec = () => {
       });
 
       console.log("protectedData", protectedData);
-  
+
       if (!protectedData?.address) {
         throw new Error("Failed to protect data.");
       }
       // Add the protected data to the collection
-      const addToCollectionResult = await dataProtector.sharing.addToCollection({
-        protectedData: protectedData.address,
-        collectionId: collectionId,
-        addOnlyAppWhitelist: IEXEC_APP,
-      });
+      const addToCollectionResult = await dataProtector.sharing.addToCollection(
+        {
+          protectedData: protectedData.address,
+          collectionId: collectionId,
+          addOnlyAppWhitelist: IEXEC_APP,
+        }
+      );
 
       console.log("addToCollectionResult", addToCollectionResult);
-  
+
       if (!addToCollectionResult) {
         throw new Error("Failed to add data to collection.");
       }
-  
+
       // Grant access to the protected data
       const grantAccessResult = await dataProtector.core.grantAccess({
         protectedData: protectedData.address,
@@ -486,42 +502,47 @@ export const useiExec = () => {
         pricePerAccess: 0,
         numberOfAccess: 100000000000,
       });
-  
+
       // Log the result after it is initialized
       console.log("grantAccessResult", grantAccessResult);
-  
+
       if (!grantAccessResult) {
         throw new Error("Failed to grant access to the protected data.");
       }
-  
-  
+
       // Set the protected data to the subscription
-      const setProtectedDataToSub = await dataProtector.sharing.setProtectedDataToSubscription({
-        protectedData: protectedData.address,
-      });
-  
+      const setProtectedDataToSub =
+        await dataProtector.sharing.setProtectedDataToSubscription({
+          protectedData: protectedData.address,
+        });
+
       if (!setProtectedDataToSub) {
         throw new Error("Failed to set protected data to subscription.");
       }
-  
-      console.log("Protected data successfully processed:", setProtectedDataToSub);
+
+      console.log(
+        "Protected data successfully processed:",
+        setProtectedDataToSub
+      );
       return { setProtectedDataToSub, protectedData: protectedData?.address };
     } catch (error) {
       console.error("Error during data protection flow:", error);
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "An error occurred while protecting data.",
+          message:
+            error instanceof Error
+              ? error.message
+              : "An error occurred while protecting data.",
           value: true,
         },
       };
     }
   };
-  
 
   const getProtectedData = async (collectionId: number) => {
     const { data: session, error: sessionError } = await checkSession();
-  
+
     if (sessionError?.value || !session) {
       return {
         data: null,
@@ -531,41 +552,49 @@ export const useiExec = () => {
         },
       };
     }
-  
+
     try {
       // Fetch protected data in the collection
-      const protectedDataResult = await dataProtector.sharing.getProtectedDataInCollections({
-        collectionId: collectionId,
-      });
-  
+      const protectedDataResult =
+        await dataProtector.sharing.getProtectedDataInCollections({
+          collectionId: collectionId,
+        });
+
       if (!protectedDataResult?.protectedDataInCollection) {
         throw new Error("No protected data found in the collection.");
       }
-  
-      console.log("Protected Data in Collection:", protectedDataResult.protectedDataInCollection);
-  
+
+      console.log(
+        "Protected Data in Collection:",
+        protectedDataResult.protectedDataInCollection
+      );
+
       const resolvedData = await Promise.all(
         protectedDataResult.protectedDataInCollection.map(async (item) => {
           if (!item?.address) {
             throw new Error("Invalid protected data address.");
           }
-  
+
           try {
             // Consume the protected data
-            const consumedData = await dataProtector.sharing.consumeProtectedData({
-              protectedData: item?.address,
-              app: IEXEC_APP,
-            });
+            const consumedData =
+              await dataProtector.sharing.consumeProtectedData({
+                protectedData: item?.address,
+                app: IEXEC_APP,
+              });
             return consumedData;
           } catch (consumeError) {
-            console.error(`Error consuming protected data for address ${item.address}:`, consumeError);
+            console.error(
+              `Error consuming protected data for address ${item.address}:`,
+              consumeError
+            );
             return {
               error: `Failed to consume protected data for address ${item.address}`,
             };
           }
         })
       );
-  
+
       console.log("Resolved Protected Data:", resolvedData);
       return {
         data: resolvedData,
@@ -576,13 +605,14 @@ export const useiExec = () => {
       return {
         data: null,
         error: {
-          message: error.message || "An error occurred while retrieving protected data.",
+          message:
+            error.message ||
+            "An error occurred while retrieving protected data.",
           value: true,
         },
       };
     }
   };
-  
 
   const subscribeToOrganization = async (collectionId: number) => {
     const { data: session, error: sessionError } = await checkSession();
@@ -597,11 +627,12 @@ export const useiExec = () => {
       };
     }
 
-    const subscribeToCollectionResult = await dataProtector.sharing.subscribeToCollection({
-      collectionId: collectionId,
-      price: 0,
-      duration: 1000000000000,
-    });
+    const subscribeToCollectionResult =
+      await dataProtector.sharing.subscribeToCollection({
+        collectionId: collectionId,
+        price: 0,
+        duration: 1000000000000,
+      });
 
     console.log("subscribeToCollectionResult", subscribeToCollectionResult);
 
@@ -609,11 +640,6 @@ export const useiExec = () => {
   };
 
   return {
-    encryptAndPushData,
-    getMyProtectedData,
-    grantAccess,
-    decryptData,
-    consumeData,
     createCollection,
     createCollectionAndSubscribe,
     getSubscribedData,
