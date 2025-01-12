@@ -35,12 +35,7 @@ export default function MonochromeFeedbackUI() {
           setOrganization(fetchedOrganization);
           setCollectionId(fetchedOrganization?.collectionId);
           if (fetchedOrganization?.collectionId) {
-            const queries = await getAcceptedQueriesByCollectionId(Number(fetchedOrganization.collectionId));
-
-            setTimeout(() => {
-              setSubscribedData(queries);
-            }, 10000);
-            getProtectedData(Number(fetchedOrganization.collectionId));
+            const queries = await getProtectedData(Number(fetchedOrganization.collectionId));
             setIsLoading(false);
           }
         } catch (error) {

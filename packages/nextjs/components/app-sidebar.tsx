@@ -16,7 +16,6 @@ import {
 import { Building2, LayoutDashboard, MessageSquarePlus } from "lucide-react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Separator } from "./ui/separator";
-import DashboardLayout from "@/app/(home)/layout";
 
 const font = Pixelify_Sans({
   subsets: ["latin"],
