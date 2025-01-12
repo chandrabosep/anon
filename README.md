@@ -2,7 +2,7 @@
 
 > **Empower your organization with anonymous feedback and secure data sharing—powered by iExec.**
 
-![landing](packages\nextjs\public\0.png)
+![landing](https://github.com/chandrabosep/anon/blob/main/packages/nextjs/public/0.png)
 
 ## Overview
 Insight Anon is a platform designed to foster open, honest communication within organizations. Employees can submit feedback with full anonymity, while management gains access to sentiment analysis and transparent resolution workflows.  
@@ -38,9 +38,9 @@ This project leverages **iExec** technology to securely protect and distribute d
 
 ## Screenshots
 
-![query](packages\nextjs\public\1.png)
-![dashboard](packages\nextjs\public\3.png)
-![reputation](packages\nextjs\public\2.png)
+![query](https://github.com/chandrabosep/anon/blob/main/packages/nextjs/public/1.png)
+![dashboard](https://github.com/chandrabosep/anon/blob/main/packages/nextjs/public/3.png)
+![reputation](https://github.com/chandrabosep/anon/blob/main/packages/nextjs/public/2.png)
 
 ## How It Works (High-Level)
 
