@@ -1,7 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
+import { DM_Sans } from "next/font/google";
 import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
 import { createQuery } from "@/actions/queries.action";
 import {
   Dialog,
@@ -12,12 +15,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { PlusCircle } from "lucide-react";
-import { DM_Sans } from "next/font/google";
 
 const font = DM_Sans({
   subsets: ["latin"],
 });
-
 
 export default function AddQuery({ collectionId }: { collectionId: number }) {
   const [title, setTitle] = useState("");
@@ -51,19 +52,21 @@ export default function AddQuery({ collectionId }: { collectionId: number }) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Add New Query</DialogTitle>
-            <DialogDescription className="text-gray-300">Please fill in the details for your new query.</DialogDescription>
+            <DialogDescription className="text-gray-300">
+              Please fill in the details for your new query.
+            </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-gray-300 mb-1">
                 Query Title
               </label>
-              <input
+              <Input
                 id="title"
                 type="text"
                 value={title}
                 onChange={e => setTitle(e.target.value)}
-                className="w-full rounded-md border-gray-300 shadow-sm px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full rounded-md shadow-sm px-4 py-2 focus:ring-none focus:border-gray-300"
                 placeholder="Enter query title"
                 required
               />
@@ -73,11 +76,11 @@ export default function AddQuery({ collectionId }: { collectionId: number }) {
               <label htmlFor="content" className="block text-sm font-medium text-gray-300 mb-1">
                 Query Content
               </label>
-              <textarea
+              <Textarea
                 id="content"
                 value={content}
                 onChange={e => setContent(e.target.value)}
-                className="w-full rounded-md border-gray-300 shadow-sm px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full rounded-md shadow-sm px-4 py-2 focus:ring-none focus:border-gray-300"
                 rows={4}
                 placeholder="Enter your query details"
                 required

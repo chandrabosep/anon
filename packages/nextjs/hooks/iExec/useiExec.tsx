@@ -2,15 +2,41 @@
 //@ts-nocheck
 "use client";
 
-import {
-  BELLECOUR_CHAIN_ID,
-  IEXEC_APP,
-  createArrayBufferFromFile,
-} from "@/utils/iExec/utils";
+import { BELLECOUR_CHAIN_ID, IEXEC_APP, IEXEC_APP_WHITELIST, createArrayBufferFromFile } from "@/utils/iExec/utils";
 import { IExecDataProtector, ProtectedData } from "@iexec/dataprotector";
 import JSZip from "jszip";
 import { toast } from "sonner";
 import { useSwitchChain } from "wagmi";
+
+/* eslint-disable react-hooks/rules-of-hooks */
+//@ts-nocheck
+
+/* eslint-disable react-hooks/rules-of-hooks */
+//@ts-nocheck
+
+/* eslint-disable react-hooks/rules-of-hooks */
+//@ts-nocheck
+
+/* eslint-disable react-hooks/rules-of-hooks */
+//@ts-nocheck
+
+/* eslint-disable react-hooks/rules-of-hooks */
+//@ts-nocheck
+
+/* eslint-disable react-hooks/rules-of-hooks */
+//@ts-nocheck
+
+/* eslint-disable react-hooks/rules-of-hooks */
+//@ts-nocheck
+
+/* eslint-disable react-hooks/rules-of-hooks */
+//@ts-nocheck
+
+/* eslint-disable react-hooks/rules-of-hooks */
+//@ts-nocheck
+
+/* eslint-disable react-hooks/rules-of-hooks */
+//@ts-nocheck
 
 const dataProtector = new IExecDataProtector(window.ethereum);
 
@@ -117,8 +143,7 @@ export const useiExec = () => {
   };
 
   const checkSession = async () => {
-    const { data: ethProvider, error: ethProviderError } =
-      await checkETHProvider();
+    const { data: ethProvider, error: ethProviderError } = await checkETHProvider();
     const { data: userAddress, error } = await checkUserAddress();
     const { data: chainId, error: chainIdError } = await checkCorrectChain();
 
@@ -383,8 +408,7 @@ export const useiExec = () => {
       };
     }
 
-    const createCollectionResult =
-      await dataProtector.sharing.createCollection();
+    const createCollectionResult = await dataProtector.sharing.createCollection();
 
     return createCollectionResult;
   };
@@ -402,23 +426,20 @@ export const useiExec = () => {
       };
     }
 
-    const subscribeToCollectionResult =
-      await dataProtector.sharing.setSubscriptionParams({
-        collectionId: collectionId,
-        price: 0,
-        duration: 1000000000000,
-      });
+    const subscribeToCollectionResult = await dataProtector.sharing.setSubscriptionParams({
+      collectionId: collectionId,
+      price: 0,
+      duration: 1000000000000,
+    });
 
     return subscribeToCollectionResult;
   };
 
   const createCollectionAndSubscribe = async () => {
-    const collection = await createCollection().then(async (res) => {
+    const collection = await createCollection().then(async res => {
       console.log("res", res);
       // @ts-ignore
-      const subscribeToCollectionResult = await subscribeToCollection(
-        res?.collectionId as number
-      );
+      const subscribeToCollectionResult = await subscribeToCollection(res?.collectionId as number);
       return { collection: res, subscribeToCollectionResult };
     });
     console.log(collection);
@@ -439,19 +460,14 @@ export const useiExec = () => {
       };
     }
     console.log("collectionId222", collectionId);
-    const subscribedData =
-      await dataProtector.sharing.getProtectedDataInCollections({
-        collectionId: collectionId,
-      });
+    const subscribedData = await dataProtector.sharing.getProtectedDataInCollections({
+      collectionId: collectionId,
+    });
     console.log("subscribedData", subscribedData);
     return subscribedData;
   };
 
-  const setProtectedDataToSubscription = async (
-    title: string,
-    content: string,
-    collectionId: number
-  ) => {
+  const setProtectedDataToSubscription = async (title: string, content: string, collectionId: number) => {
     const { data: session, error: sessionError } = await checkSession();
 
     if (sessionError?.value || !session) {
@@ -473,67 +489,64 @@ export const useiExec = () => {
           content: content,
         },
       });
-
+    
       console.log("protectedData", protectedData);
-
+    
       if (!protectedData?.address) {
         throw new Error("Failed to protect data.");
       }
+    
       // Add the protected data to the collection
-      const addToCollectionResult = await dataProtector.sharing.addToCollection(
-        {
-          protectedData: protectedData.address,
-          collectionId: collectionId,
-          addOnlyAppWhitelist: IEXEC_APP,
-        }
-      );
-
+      const addToCollectionResult = await dataProtector.sharing.addToCollection({
+        protectedData: protectedData.address,
+        collectionId: collectionId,
+        addOnlyAppWhitelist: IEXEC_APP_WHITELIST,
+      });
+    
       console.log("addToCollectionResult", addToCollectionResult);
-
+    
       if (!addToCollectionResult) {
         throw new Error("Failed to add data to collection.");
       }
-
-      // Grant access to the protected data
-      const grantAccessResult = await dataProtector.core.grantAccess({
-        protectedData: protectedData.address,
-        authorizedApp: IEXEC_APP,
-        authorizedUser: `0x0000000000000000000000000000000000000000`,
-        pricePerAccess: 0,
-        numberOfAccess: 100000000000,
-      });
-
-      // Log the result after it is initialized
-      console.log("grantAccessResult", grantAccessResult);
-
-      if (!grantAccessResult) {
-        throw new Error("Failed to grant access to the protected data.");
+    
+      // Check the session
+      const { data: session, error: sessionError } = await checkSession();
+    
+      if (sessionError?.value || !session) {
+        return {
+          data: null,
+          error: {
+            message: "Error creating file or checking session",
+            value: true,
+          },
+        };
       }
-
+    
       // Set the protected data to the subscription
-      const setProtectedDataToSub =
-        await dataProtector.sharing.setProtectedDataToSubscription({
-          protectedData: protectedData.address,
-        });
-
+      const setProtectedDataToSub = await dataProtector.sharing.setProtectedDataToSubscription({
+        protectedData: protectedData.address,
+      });
+    
       if (!setProtectedDataToSub) {
         throw new Error("Failed to set protected data to subscription.");
       }
-
-      console.log(
-        "Protected data successfully processed:",
-        setProtectedDataToSub
-      );
-      return { setProtectedDataToSub, protectedData: protectedData?.address };
+    
+      console.log("Protected data successfully processed:", setProtectedDataToSub);
+      console.log("final", { setProtectedDataToSub, protectedData: protectedData?.address });
+    
+      // Return the protected data address
+      return {
+        data: protectedData?.address,
+        error: null,
+      };
     } catch (error) {
       console.error("Error during data protection flow:", error);
+    
+      // Explicitly return an error structure
       return {
         data: null,
         error: {
-          message:
-            error instanceof Error
-              ? error.message
-              : "An error occurred while protecting data.",
+          message: error instanceof Error ? error.message : "An error occurred while protecting data.",
           value: true,
         },
       };
@@ -555,47 +568,81 @@ export const useiExec = () => {
 
     try {
       // Fetch protected data in the collection
-      const protectedDataResult =
-        await dataProtector.sharing.getProtectedDataInCollections({
-          collectionId: collectionId,
-        });
+      const protectedDataResult = await dataProtector.sharing.getProtectedDataInCollections({
+        collectionId: collectionId,
+      });
+      // console.log("protectedDataResult", protectedDataResult);
 
       if (!protectedDataResult?.protectedDataInCollection) {
         throw new Error("No protected data found in the collection.");
       }
 
-      console.log(
-        "Protected Data in Collection:",
-        protectedDataResult.protectedDataInCollection
-      );
+      // console.log("Protected Data in Collection:", protectedDataResult.protectedDataInCollection);
 
-      const resolvedData = await Promise.all(
-        protectedDataResult.protectedDataInCollection.map(async (item) => {
-          if (!item?.address) {
-            throw new Error("Invalid protected data address.");
-          }
+      const data = await dataProtector.sharing.consumeProtectedData({
+        protectedData: protectedDataResult.protectedDataInCollection[0]?.address,
+        app: IEXEC_APP,
+        workerpool: `prod-v8-learn.main.pools.iexec.eth`,
+        // onStatusUpdate: status => {
+        //   console.log(`[consumeProtectedData] status`, status);
+        // },
+      });
 
-          try {
-            // Consume the protected data
-            const consumedData =
-              await dataProtector.sharing.consumeProtectedData({
-                protectedData: item?.address,
-                app: IEXEC_APP,
-              });
-            return consumedData;
-          } catch (consumeError) {
-            console.error(
-              `Error consuming protected data for address ${item.address}:`,
-              consumeError
-            );
-            return {
-              error: `Failed to consume protected data for address ${item.address}`,
-            };
-          }
-        })
-      );
+      const getResultFromCompletedTask = async () => {
+        setErrorMessage("");
+        try {
+          checkIsConnected();
+        } catch (err) {
+          setErrorMessage("Please install MetaMask");
+          return;
+        }
+        await checkCurrentChain();
+        try {
+          setResultFromCompletedTaskSuccess(false);
+          setIsLoadingGetResultFromCompletedTask(true); // Show loader
+          const taskResult = await dataProtector.sharing.getResultFromCompletedTask({
+            taskId: data.taskId,
+            // The consuming app provided by iExec will store its result in a file named "content"
+            path: "content",
+            onStatusUpdate: status => {
+              console.log("[getResultFromCompletedTask] status", status);
+            },
+          });
+          const decodedText = new TextDecoder().decode(taskResult.result);
+          console.log("decodedText", decodedText);
+          setContent(decodedText);
+          setIsLoadingGetResultFromCompletedTask(false); // hide loader
+          setResultFromCompletedTaskSuccess(true); // show success icon
+        } catch (e) {
+          setIsLoadingGetResultFromCompletedTask(false); // hide loader
+          console.error(e);
+        }
+      };
 
-      console.log("Resolved Protected Data:", resolvedData);
+      // const resolvedData = await Promise.all(
+      //   protectedDataResult.protectedDataInCollection.map(async item => {
+      //     if (!item?.address) {
+      //       throw new Error("Invalid protected data address.");
+      //     }
+      //     console.log(`item ${item.address}`, item);
+      //     try {
+      //       // Consume the protected data
+      //       const consumedData = await dataProtector.sharing.consumeProtectedData({
+      //         protectedData: item?.address,
+      //         app: IEXEC_APP,
+      //       });
+      //       console.log(`consumedData ${item.address}`, consumedData);
+      //       return consumedData;
+      //     } catch (consumeError) {
+      //       console.error(`Error consuming protected data for address ${item.address}:`, consumeError);
+      //       return {
+      //         error: `Failed to consume protected data for address ${item.address}`,
+      //       };
+      //     }
+      //   }),
+      // );
+
+      // console.log("Resolved Protected Data:", resolvedData);
       return {
         data: resolvedData,
         error: null,
@@ -605,9 +652,7 @@ export const useiExec = () => {
       return {
         data: null,
         error: {
-          message:
-            error.message ||
-            "An error occurred while retrieving protected data.",
+          message: error.message || "An error occurred while retrieving protected data.",
           value: true,
         },
       };
@@ -627,12 +672,11 @@ export const useiExec = () => {
       };
     }
 
-    const subscribeToCollectionResult =
-      await dataProtector.sharing.subscribeToCollection({
-        collectionId: collectionId,
-        price: 0,
-        duration: 1000000000000,
-      });
+    const subscribeToCollectionResult = await dataProtector.sharing.subscribeToCollection({
+      collectionId: collectionId,
+      price: 0,
+      duration: 1000000000000,
+    });
 
     console.log("subscribeToCollectionResult", subscribeToCollectionResult);
 

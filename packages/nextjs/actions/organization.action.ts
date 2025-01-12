@@ -42,7 +42,6 @@ export async function createOrganization(data: { name: string; walletAddress: st
   }
 }
 
-
 export async function getOrganizations(address: string) {
   try {
     // Find organizations where the user is a member

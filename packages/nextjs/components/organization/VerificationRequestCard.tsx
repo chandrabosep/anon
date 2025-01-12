@@ -28,14 +28,15 @@ export function VerificationRequestCard({
     try {
       setIsLoading(true);
       console.log("Accepting request");
-      const protectedData = await setProtectedDataToSubscription(request.title, request.content, collectionId).then(
-        async res => {
-          if (res?.data) {
-            await acceptQuery(Number(request?.id));
-          }
-        },
-      );
-      console.log("Request accepted:", protectedData);
+
+      const res = await setProtectedDataToSubscription(request.title, request.content, collectionId);
+      console.log("res", res);
+      if (res && res.data) {
+        await acceptQuery(Number(request?.id), res.data);
+        console.log("Request accepted:", res);
+      } else {
+        console.log("No data returned or an error occurred.");
+      }
     } catch (error) {
       console.error("Error accepting request:", error);
     } finally {
