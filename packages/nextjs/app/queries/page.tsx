@@ -19,7 +19,6 @@ export default function MonochromeFeedbackUI() {
   const { isConnected, address } = useAccount();
   const [organization, setOrganization] = useState<any | null>(null);
   const [subscribedData, setSubscribedData] = useState<any | null>(null);
-  const reputationScore = 2;
   const [isLoading, setIsLoading] = useState(false);
 
   const { setCollectionId } = useGlobalState();
@@ -32,6 +31,7 @@ export default function MonochromeFeedbackUI() {
         try {
           setIsLoading(true);
           const fetchedOrganization = await getCollectionIdByWalletAddress(address);
+          console.log("fetchedOrganization", fetchedOrganization);
           setOrganization(fetchedOrganization);
           setCollectionId(fetchedOrganization?.collectionId);
           if (fetchedOrganization?.collectionId) {
@@ -81,7 +81,7 @@ export default function MonochromeFeedbackUI() {
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <ReputationChart score={reputationScore} />
+              <ReputationChart score={organization?.reputation || 0} />
             </div>
           </CardContent>
         </Card>

@@ -63,6 +63,7 @@ function Dashboard() {
             <h2 className="text-2xl font-semibold  mb-4">Verification Requests</h2>
             <div className="grid gap-4">
               {queries.map(query => (
+                console.log("query", query),
                 <VerificationRequestCard key={query.id} request={query} collectionId={RecentOrgcollectionId} />
               ))}
               {queries.length === 0 && (

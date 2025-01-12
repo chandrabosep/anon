@@ -12,6 +12,7 @@ interface VerificationRequest {
   title: string;
   content: string;
   createdAt: string;
+  organizationId: number;
 }
 
 export function VerificationRequestCard({
@@ -32,7 +33,7 @@ export function VerificationRequestCard({
       const res = await setProtectedDataToSubscription(request.title, request.content, collectionId);
       console.log("res", res);
       if (res && res.data) {
-        await acceptQuery(Number(request?.id), res.data);
+        await acceptQuery(Number(request?.id), res.data, request.organizationId, request.content);
         console.log("Request accepted:", res);
       } else {
         console.log("No data returned or an error occurred.");

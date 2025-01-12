@@ -1,6 +1,7 @@
 "use server";
 
 import prisma from "../lib/db";
+import { analyzeSentiment } from "./analyze-sentiment";
 
 export async function createQuery(data: { title: string; content: string; collectionId: number }) {
   if (!data.title || !data.content || !data.collectionId) {
@@ -54,10 +55,21 @@ export async function getQueries(walletAddress: string) {
   return queries;
 }
 
-export async function acceptQuery(queryId: number, protectedDataAddress: string) {
+export async function acceptQuery(queryId: number, protectedDataAddress: string, organizationId: number, content: string) {
   await prisma.query.update({
     where: { id: queryId },
     data: { status: "APPROVED", protectedDataAddress },
+  });
+
+  const rating = analyzeSentiment(content);
+
+  await prisma.organization.update({
+    where: { id: organizationId },
+    data: {
+      reputation: {
+        increment: rating,
+      },
+    },
   });
 }
 

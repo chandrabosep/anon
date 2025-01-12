@@ -77,6 +77,7 @@ export async function getCollectionIdByWalletAddress(walletAddress: string) {
             name: true,
             collectionId: true,
             members: true, // Include the members to get their count
+            reputation: true,
           },
           orderBy: {
             createdAt: "desc",

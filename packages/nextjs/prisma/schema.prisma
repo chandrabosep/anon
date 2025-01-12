@@ -27,6 +27,7 @@ model Organization {
   walletAddress String
   createdAt     DateTime @default(now())
   collectionId  Int      @unique
+  reputation    Int      @default(0)
   members       User[]   @relation("UserOrganizations")
   queries       Query[]
 }
