@@ -2,6 +2,7 @@
 
 import { Pixelify_Sans } from "next/font/google";
 import Link from "next/link";
+import { Separator } from "./ui/separator";
 import {
   Sidebar,
   SidebarContent,
@@ -13,9 +14,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Building2, LayoutDashboard, MessageSquarePlus } from "lucide-react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { Separator } from "./ui/separator";
+import { Building2, LayoutDashboard, MessageSquarePlus } from "lucide-react";
 
 const font = Pixelify_Sans({
   subsets: ["latin"],
@@ -33,13 +33,20 @@ const items = [
     url: "/dashboard",
     icon: LayoutDashboard,
   },
+  {
+    title: "Reputations",
+    url: "/reputations",
+    icon: Building2,
+  },
 ];
 
 export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader className="pt-4">
-        <span className={`${font.className} text-2xl font-bold px-2`}>InsightAnon</span>
+        <Link href="/" className={`${font.className} text-2xl font-bold px-2`}>
+          InsightAnon
+        </Link>
       </SidebarHeader>
       <Separator className="w-full bg-white/20" />
       <SidebarContent>
@@ -49,8 +56,8 @@ export function AppSidebar() {
               {items.map(item => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link href={item.url} className="text-lg font-medium">
-                      <item.icon className="size-5" />
+                    <Link href={item.url} className="text-[18px] font-medium">
+                      <item.icon className="size-8" />
                       {item.title}
                     </Link>
                   </SidebarMenuButton>
